@@ -1,0 +1,99 @@
+# Main language rules
+
+program: form_list
+
+form_list: form *newline* opt_form_list
+
+opt_form_list: *empty*
+             | form *newline* opt_form_list
+
+form: defn
+    | expr
+
+defn: 'def' variable start_nest expr end_nest
+
+start_nest: ':' *newline* *indent*
+
+end_nest: *newline* *dedent*
+
+variable: *identifier that is not a keyword*
+
+expr: literal
+    | variable
+    | if_expr
+    | lambda_expr
+    | set_expr
+    | proc_call
+    | *derived_expr*
+
+literal: boolean
+       | integer
+       | string
+       | quote_expr
+
+quote_expr: '`' datum
+
+if_expr: 'if' '(' expr ')' start_nest expr opt_else end_nest
+
+opt_else: *empty*
+        | end_nest 'else' start_nest expr
+
+lambda_expr: 'lambda' parameters start_nest form_list end_nest
+
+set_expr: 'set!' variable start_nest expr end_nest
+
+proc_call: expr '(' opt_expr_list ')'
+
+opt_expr_list: *empty*
+             | expr opt_expr_list
+
+parameters: *empty*
+          | '(' variable opt_variable_list ')'
+
+opt_variable_list: *empty*
+                 | variable opt_variable_list
+
+
+# Data rules
+
+datum: boolean
+     | integer
+     | string
+     | tuple
+
+tuple: '[' datum opt_datum_list ']'
+
+opt_datum_list: *empty*
+              | datum opt_datum_list
+
+identifier: letter opt_identifier
+
+opt_identifier: *empty*
+              | digit opt_identifier
+              | letter opt_identifier
+              | '_' opt_identifier
+
+letter: 'a' | 'b' | 'c' | ... | 'z'
+      | 'A' | 'B' | 'C' | ... | 'Z'
+
+digit: '0' | '1' | '2' | ... | '9'
+
+boolean: '#t' | '#f'
+
+integer: sign digits
+
+digits: digit
+      | digit digits
+
+sign: *empty*
+    | '+'
+    | '-'
+
+string: '"' characters '"'
+
+characters: *empty*
+          | *any other character, including escaped chars* characters
+
+comment: ';' *anything* *newline*
+
+# vim:syntax=ebnf
