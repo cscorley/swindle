@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .context import swindle
+from context import swindle
 
 import unittest
 
