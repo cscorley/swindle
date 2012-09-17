@@ -1,5 +1,5 @@
 # virtualenv
-env/
+.env/
 
 *.py[co]
 
