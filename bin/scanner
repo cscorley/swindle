@@ -11,8 +11,7 @@ def main(argv):
                                help='a file for the scanner')
 
     args = aparser.parse_args()
-    print(args.files)
-    scanner = Scanner(args.files[0])
+    Scanner.scan(args.files[0])
 
 if __name__ == '__main__':
     main(sys.argv)
