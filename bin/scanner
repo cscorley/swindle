@@ -3,7 +3,7 @@
 import os
 import sys
 import argparse
-from swindle.scanner import Scanner
+from swindle.scanner import scan 
 
 def main(argv):
     aparser = argparse.ArgumentParser(description='Scan a file.')
@@ -11,7 +11,7 @@ def main(argv):
                                help='a file for the scanner')
 
     args = aparser.parse_args()
-    Scanner.scan(args.files[0])
+    scan(args.files[0])
 
 if __name__ == '__main__':
     main(sys.argv)

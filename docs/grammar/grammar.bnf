@@ -78,7 +78,7 @@ letter: 'a' | 'b' | 'c' | ... | 'z'
 
 digit: '0' | '1' | '2' | ... | '9'
 
-boolean: '#t' | '#f'
+boolean: 'True' | 'False'
 
 integer: sign digits
 
@@ -94,6 +94,6 @@ string: '"' characters '"'
 characters: *empty*
           | *any other character, including escaped chars* characters
 
-comment: ';' *anything* *newline*
+comment: '#' *anything* *newline*
 
 # vim:syntax=ebnf

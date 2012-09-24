@@ -3,18 +3,20 @@ import sys
 
 from swindle.lexer import Lexer
 
-def scan(filename): 
-    if type(filename) != str or len(filename) == 0:
+def scan(source, destination=sys.stdout):
+    if type(source) != str or len(source) == 0:
         return False
-    
+
     try:
-        with open(filename) as f:
+        with open(source) as f:
             lexer = Lexer(f)
 
             for token in lexer.lex():
-                print(token)
+                destination.write(str(token))
+                destination.write('\n')
     except IOError as e:
-        print(e)
+        destination.write(str(e))
+        destination.write('\n')
         return False
 
     return True
