@@ -11,9 +11,11 @@ def scan(source, destination=sys.stdout):
         with open(source) as f:
             lexer = Lexer(f)
 
-            for token in lexer.lex():
+            token = lexer.lex()
+            while token:
                 destination.write(str(token))
                 destination.write('\n')
+                token = lexer.lex()
     except IOError as e:
         destination.write(str(e))
         destination.write('\n')

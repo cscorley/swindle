@@ -22,16 +22,22 @@ class LexerTestSuite(unittest.TestCase):
 
 
         l = lexer.Lexer(StringIO(":()[]+-`"))
-        lexemes = [x for x in l.lex()]
-        assert len(lexemes) != 0
-        assert lexemes[0].val == ':'
-        assert lexemes[1].val == "("
-        assert lexemes[2].val == ")"
-        assert lexemes[3].val == "["
-        assert lexemes[4].val == "]"
-        assert lexemes[5].val == "+"
-        assert lexemes[6].val == "-"
-        assert lexemes[7].val == "`"
+        lexeme = l.lex()
+        assert lexeme.val == ":"
+        lexeme = l.lex()
+        assert lexeme.val == "("
+        lexeme = l.lex()
+        assert lexeme.val == ")"
+        lexeme = l.lex()
+        assert lexeme.val == "["
+        lexeme = l.lex()
+        assert lexeme.val == "]"
+        lexeme = l.lex()
+        assert lexeme.val == "+"
+        lexeme = l.lex()
+        assert lexeme.val == "-"
+        lexeme = l.lex()
+        assert lexeme.val == "`"
 
 
 if __name__ == '__main__':
