@@ -20,11 +20,15 @@ class Types:
         self.keyword = False
         self.punctuation = False
         self.whitespace = False
-        self.string = False
         self.integer = False
+        self.string = False
         self.variable = False
+        self.unknown = False
 
-        if val in KEYWORDS:
+        if val is None:
+            self.unknown = True
+            self.type_string = "UNKNOWN"
+        elif val in KEYWORDS:
             self.keyword = True
             self.type_string = val
         elif val in PUNCTUATION:
@@ -34,9 +38,12 @@ class Types:
             if val.isdigit():
                 self.integer = True
                 self.type_string = "int"
-            if val == " ":
+            elif val == " ":
                 self.whitespace = True
                 self.type_string = "ws"
+            elif val.startswith('"'):
+                self.string = True
+                self.type_string = "str"
             else:
                 self.variable = True
                 self.type_string = "var"

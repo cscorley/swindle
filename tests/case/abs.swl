@@ -1,5 +1,4 @@
 def abs:
-    # returns the absolute value
     lambda x:
         if ( lt(x 0) ):
             -x

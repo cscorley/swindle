@@ -2,7 +2,10 @@ from swindle.types import Types
 
 class Lexeme:
     def __init__(self, val, line_no, col_no, aux=0, unknown=False):
-        self.val_type = Types(val)
+        if unknown:
+            self.val_type = Types(None)
+        else:
+            self.val_type = Types(val)
         self.val = val
         self.line_no = line_no + 1
         self.col_no = col_no - len(str(val)) + 1

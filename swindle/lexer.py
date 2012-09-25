@@ -63,8 +63,9 @@ class Lexer:
                                 self.line_no,
                                 self.col_no,
                                 aux=self.whitespace_count)
-                    else:
-                        return None
+                        # not sure why this else was there, it breaks comment mode!
+#                    else:
+#                        return None
 
             if self.comment_mode:
                 if c == '\n':
@@ -145,16 +146,18 @@ class Lexer:
 
 
     def lex_string(self):
-        cstr = self.get_next_char()
+        cstr = self.get_next_char() # if we want to collect beginning "
+#        cstr = str()
         c = self.get_next_char()
         while c:
             if c == '\\':
                 cstr += c
-            elif c != '"':
-                break
+                c = self.get_next_char()
+            elif c == '"':
+                cstr += c # if we want to collect ending "
+                # why can't i disable collecting " and not have 
+                # the string split up?
+                return Lexeme(cstr, self.line_no, self.col_no)
 
             cstr += c
             c = self.get_next_char()
-
-        self.saved_char = c
-        return Lexeme(cstr, self.line_no, self.col_no)
