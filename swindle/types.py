@@ -8,45 +8,43 @@ KEYWORDS = frozenset(["def",
                     "False"
                     ])
 # punctuation
-PUNCTUATION = frozenset(":[]()+-`")
+PUNCTUATION = frozenset(":()")
+
+LITERALS_PUNC = frozenset("[]+-`")
 
 # variables
 # operators
 # numbers
+class Enum(set):
+    # http://stackoverflow.com/a/2182437
+    def __getattr__(self, name):
+        if name in self:
+            return name
+        raise AttributeError
 
+Types = Enum(['keyword', 'punctuation', 'literals_punc', 'whitespace',
+        'boolean', 'integer', 'string', 'variable', 'unknown'])
 
-class Types:
-    def __init__(self, val):
-        self.keyword = False
-        self.punctuation = False
-        self.whitespace = False
-        self.integer = False
-        self.string = False
-        self.variable = False
-        self.unknown = False
-
-        if val is None:
-            self.unknown = True
-            self.type_string = "UNKNOWN"
-        elif val in KEYWORDS:
-            self.keyword = True
-            self.type_string = val
-        elif val in PUNCTUATION:
-            self.punctuation = True
-            self.type_string = val
+def get_type(val):
+    if val is None:
+        return Types.unknown
+    elif val in KEYWORDS:
+        if val == "True" or val == "False":
+            return Types.boolean
         else:
-            if val.isdigit():
-                self.integer = True
-                self.type_string = "int"
-            elif val == " ":
-                self.whitespace = True
-                self.type_string = "ws"
-            elif val.startswith('"'):
-                self.string = True
-                self.type_string = "str"
-            else:
-                self.variable = True
-                self.type_string = "var"
+            return Types.keyword
+    elif val in PUNCTUATION:
+        return Types.punctuation
+    elif val in LITERALS_PUNC:
+        return Types.literals_punc
+    else:
+        if val.isdigit():
+            return Types.integer
+        elif val == " ":
+            return Types.whitespace
+        elif val.startswith('"'):
+            return Types.string
+        else:
+            return Types.variable
 
-    def __str__(self):
-        return str(self.type_string)
+

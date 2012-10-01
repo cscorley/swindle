@@ -1,4 +1,6 @@
 from swindle.lexeme import Lexeme
+from swindle.types import get_type
+from swindle.types import Types
 from io import BufferedReader
 
 class Lexer:
@@ -21,9 +23,34 @@ class Lexer:
     @indent_count.setter
     def indent_count(self, val):
         if type(val) != int or val < 0:
-            raise Exception("Indentation count must be a positive integer")
+            self.make_error("Indentation count must be a positive integer")
 
         self._indent_count = val
+
+    @property
+    def line_no(self):
+        return self._line_no
+
+    @line_no.setter
+    def line_no(self, val):
+        self._line_no = val + 1
+
+    @property
+    def col_no(self):
+        return self._col_no
+
+    @col_no.setter
+    def col_no(self, val):
+        self._col_no = val + 1
+
+    def make_error(self, msg):
+        exception_str = str(self.fileptr.name) + "\n"
+        exception_str += "Error on line " + str(self.line_no)
+        exception_str += ", character " +  str(self.col_no)
+        exception_str += ": \n\t" + str(msg)
+
+        raise Exception(exception_str)
+
 
     def char_generator(self):
         for self.line_no, line in enumerate(self.fileptr):
@@ -128,6 +155,9 @@ class Lexer:
             cstr += c
             c = self.get_next_char()
 
+        if get_type(c) is not Types.punctuation:
+            self.make_error("Variable names must begin with a letter.")
+
         self.saved_char = c
         return Lexeme(cstr, self.line_no, self.col_no)
 
@@ -155,8 +185,6 @@ class Lexer:
                 c = self.get_next_char()
             elif c == '"':
                 cstr += c # if we want to collect ending "
-                # why can't i disable collecting " and not have 
-                # the string split up?
                 return Lexeme(cstr, self.line_no, self.col_no)
 
             cstr += c
