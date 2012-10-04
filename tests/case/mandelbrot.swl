@@ -1,0 +1,20 @@
+
+def mandelbrot_iter:
+    lambda iterations:
+        lambda x y:
+            def helper:
+                lambda iter_left r s:
+                    cond(
+                            [equal(iter_left 0) 0]
+                            [gt(
+                                    sqrt(add(square(r) square(s)))
+                                    2)
+                                sub(iterations iter_left)
+                                ]
+                            [True helper(
+                                sub(iter_left 1)
+                                add(sub(square(r) sqare(s)) x)
+                                add(mult(2 r s) y))]
+                            )
+            helper(iterations 0 0)
+

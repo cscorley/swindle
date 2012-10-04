@@ -1,0 +1,24 @@
+def fact:
+    lambda n:
+        if ( gt(n 1)):
+            multi(n fact(sub(n 1)))
+        else:
+            n
+
+# With excessive indentions
+
+def fact:
+    lambda n:
+        if (gt(n 1)):
+            multi(
+                    n
+                    fact(
+                        sub(
+                            n 
+                            1
+                            )
+                        )
+                    )
+        else:
+            n
+
