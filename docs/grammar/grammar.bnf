@@ -29,11 +29,15 @@ expr: literal
 literal: boolean
        | integer
        | string
+       | tuple
        | quote_expr
 
 quote_expr: '`' datum
 
-if_expr: 'if' '(' expr ')' start_nest expr opt_else end_nest
+if_expr: 'if' '(' expr ')' start_nest expr opt_elifs opt_else end_nest
+
+opt_elifs: *empty*
+         | end_nest 'elif' '(' expr ')' start_nest expr opt_elifs
 
 opt_else: *empty*
         | end_nest 'else' start_nest expr
