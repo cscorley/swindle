@@ -1,11 +1,10 @@
 from swindle.lexeme import Lexeme
 from swindle.types import get_type
 from swindle.types import Types
-from io import BufferedReader
+from io import TextIOWrapper
 
 class Lexer:
     def __init__(self, fileptr):
-        #self.fileptr = BufferedReader(fileptr)
         self.fileptr = fileptr
         self.line_count = 0
         self.indent_count = 0
@@ -44,7 +43,12 @@ class Lexer:
         self._col_no = val + 1
 
     def make_error(self, msg):
-        exception_str = str(self.fileptr.name) + "\n"
+        if type(self.fileptr) is TextIOWrapper:
+            exception_str = str(self.fileptr.name) + "\n"
+        else:
+            exception_str = str(type(self.fileptr)) + "\n\t"
+            exception_str += str(self.fileptr) + "\n"
+
         exception_str += "Error on line " + str(self.line_no)
         exception_str += ", character " +  str(self.col_no)
         exception_str += ": \n\t" + str(msg)
@@ -155,7 +159,9 @@ class Lexer:
             cstr += c
             c = self.get_next_char()
 
-        if get_type(c) is not Types.punctuation:
+        if (get_type(c) is not Types.punctuation
+            and get_type(c) is not Types.whitespace
+            and c != '\n'):
             self.make_error("Variable names must begin with a letter.")
 
         self.saved_char = c

@@ -19,6 +19,33 @@ class LexerTestSuite(unittest.TestCase):
             l.indent_count = -1
 
 
+    def test_newlines(self):
+        l = lexer.Lexer(StringIO("0\n"))
+        lexeme = l.lex()
+        assert lexeme.val == "0"
+        assert lexeme.val_type is Types.integer
+
+        l = lexer.Lexer(StringIO("\"String\"\n"))
+        lexeme = l.lex()
+        assert lexeme.val == "\"String\""
+        assert lexeme.val_type is Types.string
+
+        l = lexer.Lexer(StringIO("def\n"))
+        lexeme = l.lex()
+        assert lexeme.val == "def"
+        assert lexeme.val_type is Types.keyword
+
+        l = lexer.Lexer(StringIO("\n\ndef\n"))
+        lexeme = l.lex()
+        assert lexeme.val == "def"
+        assert lexeme.val_type is Types.keyword
+
+        l = lexer.Lexer(StringIO("True\n"))
+        lexeme = l.lex()
+        assert lexeme.val == "True"
+        assert lexeme.val_type is Types.boolean
+
+
     def test_invalid_variables_caught(self):
         l = lexer.Lexer(StringIO("1adder"))
         with self.assertRaises(Exception):
