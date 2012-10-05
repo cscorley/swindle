@@ -1,4 +1,4 @@
-def my_string:
+def my_string: # comments rock
     "Hi guys!"
 
 # comment?
