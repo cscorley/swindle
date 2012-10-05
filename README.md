@@ -5,6 +5,17 @@ A simplified LISP-like interpreter built on Python that throws away
 parentheses in favor of Python-style colon and indentation on special
 forms. I might be burned at the stake for this.
 
+Requirements
+============
+`swindle` runs on Python 3.2 or above. Additional package requirements
+are as follows:
+
+    distribute==0.6.28
+    nose==1.2.1
+    wsgiref==0.1.2
+
+You can install these requirements by running `make init`, which uses pip.
+
 Grammar
 =======
 The grammar is written in a BNF variant.
@@ -31,3 +42,10 @@ An example program:
 
     abs(-4)
 
+More example programs can be found in `tests/case/`
+
+Running
+=======
+At the moment, you can run swindle by executing `bin/scanner`, or `make
+run`. `make run` will also execute `make test`, and run `bin/scanner`
+on all files in `tests/case/`.
