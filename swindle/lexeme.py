@@ -33,6 +33,9 @@ class Lexeme:
     @left.setter
     def left(self, val):
         if type(val) is Lexeme or val is None:
+            if val is self:
+                raise Exception("Lexeme cannot have self as a child")
+
             self._left_lexeme = val
         else:
             raise Exception("Left lexeme is not a Lexeme object")
@@ -44,6 +47,9 @@ class Lexeme:
     @right.setter
     def right(self, val):
         if type(val) is Lexeme or val is None:
+            if val is self:
+                raise Exception("Lexeme cannot have self as a child")
+
             self._right_lexeme = val
         else:
             raise Exception("Right lexeme is not Lexeme object")

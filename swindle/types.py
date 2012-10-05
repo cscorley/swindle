@@ -3,6 +3,7 @@ KEYWORDS = frozenset(["def",
                     "lambda",
                     "set!",
                     "if",
+                    "elif",
                     "else",
                     "True",
                     "False"

@@ -164,12 +164,17 @@ class Lexer:
     def lex_id_or_keyword(self):
         cstr = self.get_next_char()
         c = self.get_next_char()
-        while (c.isalpha()
-                or c.isdigit()
-                or c == "_"
-                or c == "!"):
+        while c and (c.isalpha()
+                  or c.isdigit()
+                  or c == "_"
+                  or c == "!"):
             cstr += c
             c = self.get_next_char()
+
+        if c and (get_type(c) is not Types.punctuation
+            and get_type(c) is not Types.whitespace
+            and c != '\n'):
+            self.make_error("Variable names cannot contain character " + c)
 
         self.saved_char = c
         return Lexeme(cstr, self.line_no, self.col_no)

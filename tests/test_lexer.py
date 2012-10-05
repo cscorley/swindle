@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from context import lexer
-from context import lexeme
+from context import (
+        lexer,
+        Types)
 
 import unittest
 from io import StringIO
@@ -17,27 +18,169 @@ class LexerTestSuite(unittest.TestCase):
             l.indent_count = ""
             l.indent_count = -1
 
-    def test_punctuation_lexes(self):
-        """Make sure we return correct punctuation lexemes"""
 
+    def test_invalid_variables_caught(self):
+        l = lexer.Lexer(StringIO("1adder"))
+        with self.assertRaises(Exception):
+            l.lex()
 
-        l = lexer.Lexer(StringIO(":()[]+-`"))
+        l = lexer.Lexer(StringIO("set?"))
+        with self.assertRaises(Exception):
+            l.lex()
+
+    def test_strings(self):
+        """Make sure confusing strings work"""
+
+        test1 = "\"This is a test string\""
+        l = lexer.Lexer(StringIO(test1))
         lexeme = l.lex()
-        assert lexeme.val == ":"
+        assert lexeme.val == test1
+        assert lexeme.val_type is Types.string
+
+        test2 = "\"This string has an embedded \\\"string\\\"\""
+        l = lexer.Lexer(StringIO(test2))
         lexeme = l.lex()
-        assert lexeme.val == "("
+        assert lexeme.val == test2
+        assert lexeme.val_type is Types.string
+
+        test3 = "\"This string has escaped\n\t\f characters \""
+        l = lexer.Lexer(StringIO(test3))
         lexeme = l.lex()
-        assert lexeme.val == ")"
+        assert lexeme.val == test3
+        assert lexeme.val_type is Types.string
+
+        l = lexer.Lexer(StringIO(test1 + test2))
         lexeme = l.lex()
-        assert lexeme.val == "["
+        assert lexeme.val == test1
         lexeme = l.lex()
-        assert lexeme.val == "]"
-        lexeme = l.lex()
-        assert lexeme.val == "+"
-        lexeme = l.lex()
-        assert lexeme.val == "-"
-        lexeme = l.lex()
-        assert lexeme.val == "`"
+        assert lexeme.val == test2
+
+    def test_case_abs(self):
+        """tests/case/abs.swl"""
+
+        """
+def abs:
+    lambda x:
+        if ( lt(x 0) ):
+            -x
+        else:
+            x
+
+abs(-4)
+"""
+
+        with open('tests/case/abs.swl') as f:
+            l = lexer.Lexer(f)
+
+            lexeme = l.lex()
+            assert lexeme.val == "def"
+
+            lexeme = l.lex()
+            assert lexeme.val == "abs"
+            assert lexeme.val_type is Types.variable
+
+            lexeme = l.lex()
+            assert lexeme.val == ":"
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.whitespace
+            assert lexeme.aux == 4
+
+            lexeme = l.lex()
+            assert lexeme.val == "lambda"
+
+            lexeme = l.lex()
+            assert lexeme.val == "x"
+            assert lexeme.val_type is Types.variable
+
+            lexeme = l.lex()
+            assert lexeme.val == ":"
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.whitespace
+            assert lexeme.aux == 8
+
+            lexeme = l.lex()
+            assert lexeme.val == "if"
+
+            lexeme = l.lex()
+            assert lexeme.val == "("
+
+            lexeme = l.lex()
+            assert lexeme.val == "lt"
+            assert lexeme.val_type is Types.variable
+
+            lexeme = l.lex()
+            assert lexeme.val == "("
+
+            lexeme = l.lex()
+            assert lexeme.val == "x"
+            assert lexeme.val_type is Types.variable
+
+            lexeme = l.lex()
+            assert lexeme.val == "0"
+            assert lexeme.val_type is Types.integer
+
+            lexeme = l.lex()
+            assert lexeme.val == ")"
+
+            lexeme = l.lex()
+            assert lexeme.val == ")"
+
+            lexeme = l.lex()
+            assert lexeme.val == ":"
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.whitespace
+            assert lexeme.aux == 12
+
+            lexeme = l.lex()
+            assert lexeme.val == "-"
+
+            lexeme = l.lex()
+            assert lexeme.val == "x"
+            assert lexeme.val_type is Types.variable
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.whitespace
+            assert lexeme.aux == 8
+
+            lexeme = l.lex()
+            assert lexeme.val == "else"
+
+            lexeme = l.lex()
+            assert lexeme.val == ":"
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.whitespace
+            assert lexeme.aux == 12
+
+            lexeme = l.lex()
+            assert lexeme.val == "x"
+            assert lexeme.val_type is Types.variable
+
+            # if we are going to expect a true dedent
+#            lexeme = l.lex()
+#            assert lexeme.val_type is Types.whitespace
+#            assert lexeme.aux == 0
+
+            lexeme = l.lex()
+            assert lexeme.val == "abs"
+            assert lexeme.val_type is Types.variable
+
+            lexeme = l.lex()
+            assert lexeme.val == "("
+
+            lexeme = l.lex()
+            assert lexeme.val == "-"
+
+            lexeme = l.lex()
+            assert lexeme.val == "4"
+            assert lexeme.val_type is Types.integer
+
+            lexeme = l.lex()
+            assert lexeme.val == ")"
+
 
 
 if __name__ == '__main__':
