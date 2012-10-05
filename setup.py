@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 
-with open('README.rst') as f:
+with open('README.md') as f:
     readme = f.read()
 
 with open('LICENSE') as f:
@@ -15,7 +15,7 @@ setup(
     description='A LISP-like that throws away parentheses for Python-style indentation.',
     long_description=readme,
     author='Christopher S. Corley',
-    author_email='cscorley@gmail.com',
+    author_email='cscorley@ua.edu',
     url='https://github.com/cscorley/swindle',
     license=license,
     packages=find_packages(exclude=('tests', 'docs'))
