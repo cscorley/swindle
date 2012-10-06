@@ -2,8 +2,8 @@
 #
 # author: Christopher S. Corley
 
-from swindle.types import get_type as get_type
-from swindle.types import Types as Types
+from swindle.types import get_type
+from swindle.types import Types
 
 class Lexeme:
     def __init__(self, val, line_no, col_no, aux=0, unknown=False):
@@ -11,11 +11,15 @@ class Lexeme:
             self.val_type = get_type(None)
         else:
             self.val_type = get_type(val)
+        self.unknown = unknown
+
+        # holds the tokenized string
         self.val = val
         self.line_no = line_no
         self.col_no = col_no - len(str(val))
+
+        # extra stuff, mostly just used for whitespace
         self.aux = aux
-        self.unknown = unknown
 
         # For building parse trees
         self.left = None
@@ -30,6 +34,8 @@ class Lexeme:
             string += "\taux=" + str(self.aux)
         return string
 
+    # Make self.left and self.right special properties so we can do some
+    # checking on the values before the assignment is made
     @property
     def left(self):
         return self._left_lexeme

@@ -9,27 +9,22 @@ from io import TextIOWrapper
 
 class Lexer:
     def __init__(self, fileptr):
+        # fileptr is generally a TextIOWrapper when reading from a file
         self.fileptr = fileptr
-        self.line_count = 0
-        self.indent_count = 0
+
         self.tokenize_whitespace = False
         self.whitespace_count = 0
         self.comment_mode = False
+
+        # To emulate pushing things back to the stream
         self.saved_char = None
 
+        # character is a generator so we can have nice reading things
+        # like next(self.character)
         self.character = self.char_generator()
 
-    @property
-    def indent_count(self):
-        return self._indent_count
-
-    @indent_count.setter
-    def indent_count(self, val):
-        if type(val) != int or val < 0:
-            self.make_error("Indentation count must be a positive integer")
-
-        self._indent_count = val
-
+    # line_no and col_no have special properties because we always want
+    # line 0 to be line 1.
     @property
     def line_no(self):
         return self._line_no
@@ -60,12 +55,16 @@ class Lexer:
         raise Exception(exception_str)
 
 
+    # a convenient way to count line numbers and read things character
+    # by character.
     def char_generator(self):
         for self.line_no, line in enumerate(self.fileptr):
             for self.col_no, char in enumerate(line):
                 self.saved_char = None
                 yield char
 
+    # returning None will represent an EOF marker, but also make looping
+    # easy since loops stop on None or False
     def get_next_char(self):
         if self.saved_char:
             c = self.saved_char
@@ -79,6 +78,10 @@ class Lexer:
         return c
 
     def skip_whitespace(self):
+        # skip_whitespace will do just that, but in swindle we need the
+        # extra property of tokenizing the whitespace at the beginning
+        # of a line as well. So, this will either return a whitespace
+        # Lexeme or None.
         c = self.get_next_char()
         while c:
             if self.tokenize_whitespace:
@@ -123,6 +126,7 @@ class Lexer:
 
         return None
 
+    # Will return None if there are no characters left.
     def lex(self):
         ws_token = self.skip_whitespace()
         if ws_token:
@@ -172,11 +176,14 @@ class Lexer:
         return Lexeme(cstr, self.line_no, self.col_no)
 
     def lex_id_or_keyword(self):
+        # we already know the saved_char contains the first letter of
+        # the id or keyword, so get it back off again.
         cstr = self.get_next_char()
         c = self.get_next_char()
         while c and (c.isalpha()
                   or c.isdigit()
                   or c == "_"
+                  # for the set! keyword
                   or c == "!"):
             cstr += c
             c = self.get_next_char()
@@ -192,10 +199,12 @@ class Lexer:
 
     def lex_string(self):
         cstr = self.get_next_char() # if we want to collect beginning "
-#        cstr = str()
+        # which we do, because we want to have an easy way for Lexeme
+        # to detect the string literal
         c = self.get_next_char()
         while c:
             if c == '\\':
+                # this will allow us to grab any escaped character
                 cstr += c
                 c = self.get_next_char()
             elif c == '"':

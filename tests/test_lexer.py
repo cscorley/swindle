@@ -12,16 +12,6 @@ from io import StringIO
 
 class LexerTestSuite(unittest.TestCase):
 
-    def test_sets_indention_level(self):
-        """Make sure the indention level remains a positive int."""
-        l = lexer.Lexer(StringIO(""))
-        assert l.indent_count == 0
-
-        with self.assertRaises(Exception):
-            l.indent_count = ""
-            l.indent_count = -1
-
-
     def test_newlines(self):
         l = lexer.Lexer(StringIO("0\n"))
         lexeme = l.lex()
