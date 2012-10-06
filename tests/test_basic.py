@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+# context.py
+#
+# author: Christopher S. Corley
+
 
 from context import swindle
 
@@ -13,5 +17,5 @@ class BasicTestSuite(unittest.TestCase):
         assert answer == 42
 
 
-if __name__ == '__main__':
+if __name__ == '__main__:
     unittest.main()

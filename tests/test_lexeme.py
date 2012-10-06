@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# test_lexeme.py
+#
+# author: Christopher S. Corley
 
 from context import (
         lexeme,

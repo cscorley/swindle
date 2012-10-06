@@ -1,4 +1,10 @@
-# keywords
+# types.py
+#
+# Still needs to be refactored so that each keyword and punctuation has
+# it's own type.
+#
+# author: Christopher S. Corley
+
 KEYWORDS = frozenset(["def",
                     "lambda",
                     "set!",
@@ -8,14 +14,9 @@ KEYWORDS = frozenset(["def",
                     "True",
                     "False"
                     ])
-# punctuation
 PUNCTUATION = frozenset(":()")
-
 LITERALS_PUNC = frozenset("[]+-`")
 
-# variables
-# operators
-# numbers
 class Enum(set):
     # http://stackoverflow.com/a/2182437
     def __getattr__(self, name):

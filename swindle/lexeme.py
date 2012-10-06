@@ -1,3 +1,7 @@
+# lexeme.py
+#
+# author: Christopher S. Corley
+
 from swindle.types import get_type as get_type
 from swindle.types import Types as Types
 

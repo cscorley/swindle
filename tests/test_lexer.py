@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# test_lexer.py
+#
+# author: Christopher S. Corley
 
 from context import (
         lexer,

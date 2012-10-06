@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# context.py
+#
+# author: Christopher S. Corley
 
 import sys
 import os

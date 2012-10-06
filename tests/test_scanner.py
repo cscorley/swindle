@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# test_scanner.py
+#
+# author: Christopher S. Corley
 
 from context import scanner
 

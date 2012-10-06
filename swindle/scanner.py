@@ -1,3 +1,7 @@
+# scanner.py
+#
+# author: Christopher S. Corley
+
 import os
 import sys
 

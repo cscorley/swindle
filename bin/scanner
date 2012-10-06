@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
+# scanner
+#
+# author: Christopher S. Corley
 
 import os
 import sys
 import argparse
-from swindle.scanner import scan 
+from swindle.scanner import scan
 
 def main(argv):
     aparser = argparse.ArgumentParser(description='Scan a file.')
