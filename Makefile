@@ -1,11 +1,11 @@
-all: compile test
+all: compile 
 
 compile:
 
 test:
 	nosetests tests
 
-run: test
+run:
 	sh bin/run.sh
 
 init:
