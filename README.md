@@ -8,13 +8,21 @@ forms. I might be burned at the stake for this.
 Requirements
 ============
 `swindle` runs on Python 3.2 or above. Additional package requirements
-are as follows:
+(for unit testing) are as follows:
 
     distribute==0.6.28
     nose==1.2.1
     wsgiref==0.1.2
 
-You can install these requirements by running `make init`, which uses pip.
+You can install these requirements by running `make init`, which
+requires pip.
+
+Running
+=======
+At the moment, you can run swindle by executing `bin/scanner`, or `make
+run`. `make run` will also execute `bin/scanner` on all files in
+`tests/case/`, but does not include the unit testing. Unit tests can be
+ran by executing `make test`.
 
 Grammar
 =======
@@ -44,8 +52,3 @@ An example program:
 
 More example programs can be found in `tests/case/`
 
-Running
-=======
-At the moment, you can run swindle by executing `bin/scanner`, or `make
-run`. `make run` will also execute `make test`, and run `bin/scanner`
-on all files in `tests/case/`.

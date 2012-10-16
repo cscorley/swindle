@@ -1,6 +1,9 @@
 # virtualenv
 env/
 
+#submit crap
+cscorley@crimson.ua.edu
+
 *.py[co]
 
 # Packages
