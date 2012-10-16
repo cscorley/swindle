@@ -108,6 +108,8 @@ class Lexer:
             if self.comment_mode:
                 if c == '\n':
                     self.comment_mode = False
+                    self.tokenize_whitespace = True
+                    self.whitespace_count = 0
             elif c == '#':
                 self.comment_mode = True
             elif c == ' ':
