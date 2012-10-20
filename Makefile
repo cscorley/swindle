@@ -1,4 +1,4 @@
-all: compile 
+all: compile test
 
 compile:
 
@@ -9,4 +9,5 @@ run:
 	sh bin/run.sh
 
 init:
+	virtualenv env
 	pip install -r requirements.txt --use-mirrors

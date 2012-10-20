@@ -10,9 +10,8 @@ Requirements
 `swindle` runs on Python 3.2 or above. Additional package requirements
 (for unit testing) are as follows:
 
-    distribute==0.6.28
+    virtualenv==1.8.2
     nose==1.2.1
-    wsgiref==0.1.2
 
 You can install these requirements by running `make init`, which
 requires pip.
