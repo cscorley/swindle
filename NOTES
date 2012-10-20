@@ -1,2 +1,0 @@
-To run unit tests, you need to install the Python's nosetest. Perform
-`make init` to install all required packages using pip.
