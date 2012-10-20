@@ -34,13 +34,13 @@ literal: boolean
 
 quote_expr: '`' datum
 
-if_expr: 'if' '(' expr ')' start_nest expr opt_elifs opt_else end_nest
+if_expr: 'if' '(' expr ')' start_nest expr end_nest opt_elifs opt_else
 
 opt_elifs: *empty*
-         | end_nest 'elif' '(' expr ')' start_nest expr opt_elifs
+         | 'elif' '(' expr ')' start_nest expr end_nest opt_elifs
 
 opt_else: *empty*
-        | end_nest 'else' start_nest expr
+        | 'else' start_nest expr end_nest
 
 lambda_expr: 'lambda' parameters start_nest form_list end_nest
 

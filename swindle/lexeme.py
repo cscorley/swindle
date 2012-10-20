@@ -6,7 +6,7 @@ from swindle.types import get_type
 from swindle.types import Types
 
 class Lexeme:
-    def __init__(self, val, line_no, col_no, aux=0, unknown=False):
+    def __init__(self, val, line_no, col_no, aux=None, unknown=False):
         if unknown:
             self.val_type = get_type(None)
         else:
