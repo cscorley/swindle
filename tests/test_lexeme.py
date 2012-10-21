@@ -6,9 +6,7 @@
 from context import (
         lexeme,
         Types,
-        KEYWORDS,
-        PUNCTUATION,
-        LITERALS_PUNC)
+        )
 
 import unittest
 from io import StringIO
@@ -18,30 +16,109 @@ class LexemeTestSuite(unittest.TestCase):
     def test_punctuation(self):
         """Make sure we return correct punctuation lexemes"""
 
-        for item in PUNCTUATION:
-            l = lexeme.Lexeme(item, 0, 0)
-            assert l.val == item
-            assert l.val_type is Types.punctuation
+        item = ':'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.colon
+
+        item = '('
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.oparen
+
+        item = ')'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.cparen
 
     def test_literal_punctuation(self):
         """Make sure we return correct literals punctuation lexemes"""
 
-        for item in LITERALS_PUNC:
-            l = lexeme.Lexeme(item, 0, 0)
-            assert l.val == item
-            assert l.val_type is Types.literals_punc
+        item = '['
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.obracket
+
+        item = ']'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.cbracket
+
+        item = '+'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.plus
+
+        item = '-'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.minus
+
+        item = '`'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.quote
 
     def test_keywords(self):
         """Make sure we return correct keyword lexemes"""
 
-        for item in KEYWORDS:
-            l = lexeme.Lexeme(item, 0, 0)
-            assert l.val == item
+        item = 'def'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.kw_def
 
-            if item == "True" or item == "False":
-                assert l.val_type is Types.boolean
-            else:
-                assert l.val_type is Types.keyword
+        item = 'lambda'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.kw_lambda
+
+        item = 'set!'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.kw_set
+
+        item = 'if'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.kw_if
+
+        item = 'elif'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.kw_elif
+
+        item = 'else'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.kw_else
+
+    def test_literals(self):
+        """Make sure literals get the correct type"""
+
+        item = 'True'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.boolean
+
+        item = 'False'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.boolean
+
+        item = '20'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.integer
+
+        item = '"Some string"'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.string
+
+        item = 'blah'
+        l = lexeme.Lexeme(item, 0, 0)
+        assert l.val == item
+        assert l.val_type is Types.variable
 
     def test_invalid_lexeme_children(self):
         """Make sure Lexeme doesn't allow invalid children"""

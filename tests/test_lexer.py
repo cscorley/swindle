@@ -26,12 +26,12 @@ class LexerTestSuite(unittest.TestCase):
         l = lexer.Lexer(StringIO("def\n"))
         lexeme = l.lex()
         assert lexeme.val == "def"
-        assert lexeme.val_type is Types.keyword
+        assert lexeme.val_type is Types.kw_def
 
         l = lexer.Lexer(StringIO("\n\ndef\n"))
         lexeme = l.lex()
         assert lexeme.val == "def"
-        assert lexeme.val_type is Types.keyword
+        assert lexeme.val_type is Types.kw_def
 
         l = lexer.Lexer(StringIO("True\n"))
         lexeme = l.lex()

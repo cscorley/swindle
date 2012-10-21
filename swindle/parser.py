@@ -53,7 +53,6 @@ class Parser:
         else: #elif self.exprPending(): ?
             self.expr()
 
-
     def defn(self):
         self.match(Types.def)
         self.variable()
@@ -87,6 +86,11 @@ class Parser:
             self.proc_call()
         else:
             self.derived_expr()
+
+    def derived_expr(self):
+        pass
+        # is this even needed here? aren't these derived expressions
+        # just expressions that are defined by the environment?
 
     def literal(self):
         elif self.booleanPending():

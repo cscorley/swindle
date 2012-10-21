@@ -6,6 +6,7 @@ import os
 import sys
 
 from swindle.lexer import Lexer
+from swindle.parser import Parser
 
 def parse_file(source, destination=sys.stdout):
     if type(source) != str or len(source) == 0:
@@ -14,12 +15,9 @@ def parse_file(source, destination=sys.stdout):
     try:
         with open(source) as f:
             lexer = Lexer(f)
+            parser = Parser(lexer)
+            parser.program()
 
-            token = lexer.lex()
-            while token:
-                destination.write(str(token))
-                destination.write('\n')
-                token = lexer.lex()
     except IOError as e:
         destination.write(str(e))
         destination.write('\n')

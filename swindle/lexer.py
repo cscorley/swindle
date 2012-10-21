@@ -3,8 +3,7 @@
 # author: Christopher S. Corley
 
 from swindle.lexeme import Lexeme
-from swindle.types import get_type
-from swindle.types import Types
+from swindle.types import (Types, get_type, PUNCTUATION)
 from io import TextIOWrapper
 
 class Lexer:
@@ -169,7 +168,7 @@ class Lexer:
             cstr += c
             c = self.get_next_char()
 
-        if (get_type(c) is not Types.punctuation
+        if (c not in PUNCTUATION
             and get_type(c) is not Types.whitespace
             and c != '\n'):
             self.make_error("Variable names must begin with a letter.")
@@ -190,7 +189,7 @@ class Lexer:
             cstr += c
             c = self.get_next_char()
 
-        if c and (get_type(c) is not Types.punctuation
+        if c and (c not in PUNCTUATION
             and get_type(c) is not Types.whitespace
             and c != '\n'):
             self.make_error("Variable names cannot contain character " + c)
