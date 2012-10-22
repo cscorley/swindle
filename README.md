@@ -10,18 +10,20 @@ Requirements
 `swindle` runs on Python 3.2 or above. Additional package requirements
 (for unit testing) are as follows:
 
-    virtualenv==1.8.2
     nose==1.2.1
 
-You can install these requirements by running `make init`, which
-requires pip.
+You can install these requirements by running `make install`, which
+requires pip. 
 
 Running
 =======
-At the moment, you can run swindle by executing `bin/scanner`, or `make
-run`. `make run` will also execute `bin/scanner` on all files in
+At the moment, you can run swindle by executing `bin/recognizer`, or `make
+run`. `make run` will also execute `bin/recognizer` on all files in
 `tests/case/`, but does not include the unit testing. Unit tests can be
 ran by executing `make test`.
+
+All test cases which fail are prepended with 'bad_' in the file name.
+All other test cases should recognize.
 
 Grammar
 =======
@@ -49,5 +51,6 @@ An example program:
 
     abs(-4)
 
-More example programs can be found in `tests/case/`
+More example programs can be found in `tests/case/` (note that improper
+programs are prepended with 'bad_')
 
