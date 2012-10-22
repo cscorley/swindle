@@ -21,7 +21,7 @@ class Parser:
         self.advance() # preload the first token
 
     def match(self, token_type, aux_pred=None):
-        if not check(token_type, aux_pred):
+        if not self.check(token_type, aux_pred):
             if self.curr.val_type == Types.whitespace:
                 raise ParseError(
 "Unexpected indentation level on line %d" % self.curr.line_no)
@@ -124,7 +124,7 @@ class Parser:
         # just expressions that are defined by the environment?
 
     def literal(self):
-        elif self.booleanPending():
+        if self.booleanPending():
             self.match(Types.boolean)
         elif self.integerPending():
             self.match(Types.integer)
@@ -246,7 +246,7 @@ class Parser:
         return (self.booleanPending() or
                 self.integerPending() or
                 self.stringPending() or
-                self.tuplePending() or)
+                self.tuplePending())
 
     def variablePending(self):
         return self.check(Types.variable)

@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+# test_scanner.py
+#
+# author: Christopher S. Corley
+
+from context import recognizer
+
+import unittest
+from io import StringIO
+
+class RecognizerTestSuite(unittest.TestCase):
+    """Basic test cases."""
+
+    def test_valid_files_scanned(self):
+        assert recognizer.parse_file("tests/case/emptyfile") is True
+        assert recognizer.parse_file("tests/case/abs.swl") is True
+        assert recognizer.parse_file("tests/case/mystring.swl") is True
+        assert recognizer.parse_file("tests/case/factorial.swl") is True
+        assert recognizer.parse_file("tests/case/mandelbrot.swl") is True
+
+    def test_invalid_files_caught(self):
+        assert recognizer.parse_file(None) is False
+        assert recognizer.parse_file("") is False
+        assert recognizer.parse_file("/") is False
+        assert recognizer.parse_file("C:\\") is False
+        assert recognizer.parse_file(2) is False
+        assert recognizer.parse_file("""Docstring yo""") is False
+        assert recognizer.parse_file(list()) is False
+        assert recognizer.parse_file(dict()) is False
+
+    def test_lexemes_print_to_StringIO(self):
+        strio = StringIO("")
+        assert recognizer.parse_file("tests/case/abs.swl", strio) is True
+
+
+
+
+
+if __name__ == '__main__':
+    unittest.main()
