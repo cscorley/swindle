@@ -11,7 +11,7 @@ from io import StringIO
 class RecognizerTestSuite(unittest.TestCase):
     """Basic test cases."""
 
-    def test_valid_files_scanned(self):
+    def test_valid_files_parsed(self):
         assert recognizer.parse_file("tests/case/emptyfile") is True
         assert recognizer.parse_file("tests/case/abs.swl") is True
         assert recognizer.parse_file("tests/case/mystring.swl") is True
@@ -31,8 +31,6 @@ class RecognizerTestSuite(unittest.TestCase):
     def test_lexemes_print_to_StringIO(self):
         strio = StringIO("")
         assert recognizer.parse_file("tests/case/abs.swl", strio) is True
-
-
 
 
 

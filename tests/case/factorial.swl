@@ -1,5 +1,5 @@
 def fact:
-    lambda n:
+    lambda (n):
         if ( gt(n 1)):
             multi(n fact(sub(n 1)))
         else:
@@ -8,7 +8,7 @@ def fact:
 # With excessive indentions
 
 def fact:
-    lambda n:
+    lambda (n):
         if (gt(n 1)):
             multi(
                     n

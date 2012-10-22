@@ -1,9 +1,9 @@
 
 def mandelbrot_iter:
-    lambda iterations:
-        lambda x y:
+    lambda (iterations):
+        lambda (x y):
             def helper:
-                lambda iter_left r s:
+                lambda (iter_left r s):
                     if (equal(iter_left 0)):
                         0
                     elif (gt(
