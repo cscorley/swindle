@@ -1,0 +1,8 @@
+def abs:
+    lambda x:
+        if ( lt(x 0) ):
+            -x
+        else:
+            x
+
+abs(-4)

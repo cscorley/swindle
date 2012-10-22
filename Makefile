@@ -6,7 +6,7 @@ test:
 	nosetests tests
 
 run:
-	sh bin/run.sh
+	sh bin/run.sh bin/recognizer
 
 init:
 	virtualenv env

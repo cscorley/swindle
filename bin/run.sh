@@ -10,7 +10,7 @@ for each in `ls tests/case/*`; do
     echo "--------------------"
     cat $each
     echo "--------------------"
-    echo "Scanner:"
+    echo "$1 results:"
     echo "--------------------"
-    bin/scanner $each
+    $1 $each
 done

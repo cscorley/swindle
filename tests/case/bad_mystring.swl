@@ -1,0 +1,8 @@
+def my_string: # comments rock
+"Hi guys!"
+
+# comment?
+# should return just a string "Hi guys!"
+#
+
+my_string
