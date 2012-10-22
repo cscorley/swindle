@@ -28,6 +28,8 @@ class Parser:
 "Unexpected token on line %d, column %d: expected %s, but got %s." %
 (self.curr.line_no, self.curr.col_no, token_type, self.curr.val_type))
 
+        self.advance()
+
     def check(self, token_type, aux_pred=None):
         return (self.curr.val_type == token_type
                 and aux_pred(self.curr.aux))
@@ -54,7 +56,7 @@ class Parser:
             self.expr()
 
     def defn(self):
-        self.match(Types.def)
+        self.match(Types.kw_def)
         self.variable()
         self.start_nest()
         self.expr()
@@ -108,8 +110,24 @@ class Parser:
         self.match(Types.quote)
         self.datum()
 
+    def datum(self):
+        if self.booleanPending():
+            self.match(Types.boolean)
+        elif self.integerPending():
+            self.match(Types.integer)
+        elif self.stringPending():
+            self.match(Types.string)
+        elif self.tuplePending():
+            self.tuple()
+
+    def tuple(self):
+        self.match(Types.obracket)
+        self.datum()
+        self.opt_datum_list()
+        self.match(Types.cbracket)
+
     def if_expr(self):
-        self.match(Types.if)
+        self.match(Types.kw_if)
         self.match(Types.oparen)
         self.expr()
         self.match(Types.cparen)
@@ -121,7 +139,7 @@ class Parser:
 
     def opt_elifs(self):
         if self.elifPending():
-            self.match(Type.elif)
+            self.match(Types.kw_elif)
             self.match(Types.oparen)
             self.expr()
             self.match(Types.cparen)
@@ -132,20 +150,20 @@ class Parser:
 
     def opt_else(self):
         if self.elsePending():
-            self.match(Type.else)
+            self.match(Types.kw_else)
             self.start_nest()
             self.expr()
             self.end_nest()
 
     def lambda_expr(self):
-        self.match(Types.lambda)
+        self.match(Types.kw_lambda)
         self.parameters()
         self.start_nest()
         self.form_list()
         self.end_nest()
 
     def set_expr(self):
-        self.match(Types.set)
+        self.match(Types.kw_set)
         self.variable()
         self.start_nest()
         self.expr()
@@ -163,8 +181,8 @@ class Parser:
             self.opt_expr_list()
 
     def parameters(self):
-        if self.check(Type.oparen):
-            self.match(Type.oparen)
+        if self.check(Types.oparen):
+            self.match(Types.oparen)
             self.variable()
             self.opt_variable_list()
 
@@ -177,7 +195,7 @@ class Parser:
         return (self.defnPending() or self.exprPending())
 
     def defnPending(self):
-        return self.check(Types.def)
+        return self.check(Types.kw_def)
 
     def exprPending(self):
         return (self.literalPending() or
@@ -195,24 +213,29 @@ class Parser:
                 self.tuplePending() or
                 self.quote_exprPending())
 
+    def datumPending(self):
+        return (self.booleanPending() or
+                self.integerPending() or
+                self.stringPending() or
+                self.tuplePending() or)
 
     def variablePending(self):
         return self.check(Types.variable)
 
     def if_exprPending(self):
-        return self.check(Types.if)
+        return self.check(Types.kw_if)
 
     def elifPending(self):
-        return self.check(Types.elif)
+        return self.check(Types.kw_elif)
 
     def elsePending(self):
-        return self.check(Types.else)
+        return self.check(Types.kw_else)
 
     def lambda_exprPending(self):
-        return self.check(Types.lambda)
+        return self.check(Types.kw_lambda)
 
     def set_exprPending(self):
-        return self.check(Types.set)
+        return self.check(Types.kw_set)
 
     def proc_callPending(self):
         # derp
@@ -232,7 +255,7 @@ class Parser:
         return self.check(Types.string)
 
     def tuplePending(self):
-        return self.check(Types.tuple)
+        return self.check(Types.obracket)
 
     def quote_exprPending(self):
         return self.check(Types.quote)
