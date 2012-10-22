@@ -16,11 +16,13 @@ class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
         self.curr = None
-        self.indent = [0] # a stack of the expected indentation levels.
+        self.indent_level = [0] # a stack of the expected indentation levels.
+
+        self.advance() # preload the first token
 
     def match(self, token_type, aux_pred=None):
         if not check(token_type, aux_pred):
-            if token_type == Types.whitespace:
+            if self.curr.val_type == Types.whitespace:
                 raise ParseError(
 "Unexpected indentation level on line %d" % self.curr.line_no)
             else:
@@ -31,8 +33,11 @@ class Parser:
         self.advance()
 
     def check(self, token_type, aux_pred=None):
-        return (self.curr.val_type == token_type
+        if aux_pred:
+            return (self.curr.val_type == token_type
                 and aux_pred(self.curr.aux))
+
+        return (self.curr.val_type == token_type)
 
     def advance(self):
         self.curr = self.lexer.lex()
@@ -42,11 +47,13 @@ class Parser:
 
     def form_list(self):
         self.form()
+        self.match(Types.whitespace, aux_pred=self.newline)
         self.opt_form_list()
 
     def opt_form_list(self):
         if self.formPending():
             self.form()
+            self.match(Types.whitespace, aux_pred=self.newline)
             self.opt_form_list()
 
     def form(self):
@@ -62,13 +69,35 @@ class Parser:
         self.expr()
         self.end_nest()
 
+    def indent(self, x):
+        if x > self.indent_level[-1]:
+            self.indent_level.append(x)
+            return True
+
+        return False
+
+    def dedent(self, x):
+        while x < self.indent_level[-1]:
+            self.indent_level.pop()
+
+        if x == self.indent_level[-1]:
+            return True
+
+        return False
+
+    def newline(self, x):
+        if x == self.indent_level[-1]:
+            return True
+
+        return False
+
+
     def start_nest(self):
         self.match(Types.colon)
-        self.match(Types.whitespace, aux_pred=lambda x: x > self.ident[-1])
+        self.match(Types.whitespace, aux_pred=self.indent)
 
     def end_nest(self):
-        self.match(Types.whitespace, aux_pred=lambda x: x == self.ident[-1])
-        # matching several dedents in this way is not going to work here.
+        self.match(Types.whitespace, aux_pred=self.dedent)
 
     def variable(self):
         self.match(Types.variable)

@@ -1,6 +1,6 @@
 # Main language rules
 
-program: form_list
+program: opt_form_list
 
 form_list: form *newline* opt_form_list
 
