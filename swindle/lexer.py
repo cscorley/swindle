@@ -11,7 +11,7 @@ class Lexer:
         # fileptr is generally a TextIOWrapper when reading from a file
         self.fileptr = fileptr
 
-        self.tokenize_whitespace = False
+        self.tokenize_whitespace = True # like python, we tokenize all whitespace
         self.whitespace_count = 0
         self.comment_mode = False
 
@@ -86,42 +86,31 @@ class Lexer:
             if self.tokenize_whitespace:
                 if c == ' ':
                     self.whitespace_count += 1
-                    c = self.get_next_char()
-                    continue
-                elif c == '\n':
-                    # handle empty lines
-                    c = self.get_next_char()
-                    continue
                 else:
                     self.tokenize_whitespace = False
                     self.saved_char = c
-                    if self.whitespace_count > 0:
-                        return Lexeme(' ',
-                                self.line_no,
-                                self.col_no,
-                                aux=self.whitespace_count)
-                        # not sure why this else was there, it breaks comment mode!
-#                    else:
-#                        return None
-
-            if self.comment_mode:
-                if c == '\n':
+                    return Lexeme(' ',
+                            self.line_no,
+                            self.col_no,
+                            aux=self.whitespace_count)
+            else:
+                if self.comment_mode:
+                    if c == '\n':
+                        self.comment_mode = False
+                        self.tokenize_whitespace = True
+                        self.whitespace_count = 0
+                elif c == '#':
+                    self.comment_mode = True
+                elif c == ' ':
+                    pass
+                elif c == '\n':
+                    # begin tokenizing whitespace for indent
                     self.comment_mode = False
                     self.tokenize_whitespace = True
                     self.whitespace_count = 0
-            elif c == '#':
-                self.comment_mode = True
-            elif c == ' ':
-                c = self.get_next_char()
-                continue
-            elif c == '\n':
-                # begin tokenizing whitespace for indent
-                self.comment_mode = False
-                self.tokenize_whitespace = True
-                self.whitespace_count = 0
-            else:
-                self.saved_char = c
-                return None
+                else:
+                    self.saved_char = c
+                    return None
 
             c = self.get_next_char()
 

@@ -15,8 +15,10 @@ def main(argv):
 
     args = aparser.parse_args()
     try:
-        parse_file(args.files[0])
-        print("legal")
+        if not parse_file(args.files[0]):
+            print("Could not open file for parsing")
+        else:
+            print("legal")
     except ParseError as e:
         print("illegal")
         print(e.message)
