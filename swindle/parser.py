@@ -107,14 +107,14 @@ class Parser:
             self.literal()
         elif self.variablePending():
             self.variable()
+            if self.proc_callPending():
+                self.proc_call()
         elif self.if_exprPending():
             self.if_expr()
         elif self.lambda_exprPending():
             self.lambda_expr()
         elif self.set_exprPending():
             self.set_expr()
-        elif self.proc_callPending():
-            self.proc_call()
         else:
             self.derived_expr()
 
@@ -161,7 +161,8 @@ class Parser:
         self.expr()
         self.match(Types.cparen)
         self.start_nest()
-        self.expr()
+        #self.expr()
+        self.form_list()
         self.end_nest()
         self.opt_elifs()
         self.opt_else()
@@ -173,7 +174,8 @@ class Parser:
             self.expr()
             self.match(Types.cparen)
             self.start_nest()
-            self.expr()
+            #self.expr()
+            self.form_list()
             self.end_nest()
             self.opt_elifs()
 
@@ -181,7 +183,8 @@ class Parser:
         if self.elsePending():
             self.match(Types.kw_else)
             self.start_nest()
-            self.expr()
+            #self.expr()
+            self.form_list()
             self.end_nest()
 
     def lambda_expr(self):
@@ -199,7 +202,7 @@ class Parser:
         self.end_nest()
 
     def proc_call(self):
-        self.expr()
+#        self.expr()
         self.match(Types.oparen)
         self.opt_expr_list()
         self.match(Types.cparen)
@@ -214,6 +217,7 @@ class Parser:
             self.match(Types.oparen)
             self.variable()
             self.opt_variable_list()
+            self.match(Types.cparen)
 
     def opt_variable_list(self):
         if self.variablePending():
@@ -267,8 +271,8 @@ class Parser:
         return self.check(Types.kw_set)
 
     def proc_callPending(self):
-        # derp
-        pass
+        # cant use expr here without some sort of recursion :(
+        return self.check(Types.oparen)
 
     def derived_exprPending(self):
         # derp
