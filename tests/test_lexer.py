@@ -268,7 +268,10 @@ abs(-4)
             assert lexeme.val == "("
 
             lexeme = l.lex()
-            assert lexeme.val == "-"
+            assert lexeme.val_type is Types.variable
+
+            lexeme = l.lex()
+            assert lexeme.val == "("
 
             lexeme = l.lex()
             assert lexeme.val == "4"
@@ -277,6 +280,8 @@ abs(-4)
             lexeme = l.lex()
             assert lexeme.val == ")"
 
+            lexeme = l.lex()
+            assert lexeme.val == ")"
 
 
 if __name__ == '__main__':

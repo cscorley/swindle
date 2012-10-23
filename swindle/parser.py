@@ -22,10 +22,11 @@ class Parser:
         self.advance() # preload the first token
 
     def match(self, token_type, aux_pred=None, advance=True):
-        if not self.check(token_type, aux_pred):
+        if not self.check(token_type, aux_pred=aux_pred):
             if self.curr_token is None:
                 pass # this is allowing for empty files
-            elif self.curr_token.val_type == Types.whitespace:
+            #elif self.curr_token.val_type == Types.whitespace:
+            elif token_type == Types.whitespace:
                 raise ParseError(
 "Unexpected indention level on line %d" % self.curr_token.line_no)
             else:
@@ -59,22 +60,27 @@ class Parser:
             self.curr_token = self.lexer.lex()
             self.next_token = self.lexer.lex()
 
-        if self.curr_token and self.curr_token.val_type == Types.unknown:
-            raise ParseError("What is this I don't even...")
+#        if self.curr_token and self.curr_token.val_type == Types.unknown:
+#            raise ParseError("What is this I don't even...")
 
     def program(self):
         self.form_list()
 
     def form_list(self):
         self.form()
-        self.match(Types.whitespace, aux_pred=self.dedent, advance=False)
         self.opt_form_list()
 
     def opt_form_list(self):
-        if self.formPending():
+        if (self.newlinePending() and self.formPending(peek=True)):
+            self.match(Types.whitespace, aux_pred=self.newline)
             self.form()
-            self.match(Types.whitespace, aux_pred=self.dedent, advance=False)
             self.opt_form_list()
+
+    def newlinePending(self, peek=False):
+        return self.check(Types.whitespace, aux_pred=self.newline, peek=peek)
+
+    def formPending(self, peek=False):
+        return (self.exprPending(peek=peek) or self.defnPending(peek=peek))
 
     def form(self):
         if self.defnPending():
@@ -105,6 +111,12 @@ class Parser:
 
         return False
 
+    def newline(self, x):
+        if x == self.indent_level[-1]:
+            return True
+
+        return False
+
 
     def start_nest(self):
         self.match(Types.colon)
@@ -119,10 +131,10 @@ class Parser:
     def expr(self):
         if self.literalPending():
             self.literal()
+        elif self.proc_callPending():
+            self.proc_call()
         elif self.variablePending():
             self.variable()
-            if self.proc_callPending():
-                self.proc_call()
         elif self.if_exprPending():
             self.if_expr()
         elif self.lambda_exprPending():
@@ -217,6 +229,7 @@ class Parser:
 
     def proc_call(self):
 #        self.expr()
+        self.match(Types.variable)
         self.match(Types.oparen)
         self.opt_expr_list()
         self.match(Types.cparen)
@@ -238,72 +251,69 @@ class Parser:
             self.variable()
             self.opt_variable_list()
 
-    def formPending(self):
-        return (self.defnPending() or self.exprPending())
+    def defnPending(self, peek=False):
+        return self.check(Types.kw_def, peek=peek)
 
-    def defnPending(self):
-        return self.check(Types.kw_def)
-
-    def exprPending(self):
-        return (self.literalPending() or
-                self.variablePending() or
-                self.if_exprPending() or
-                self.lambda_exprPending() or
-                self.set_exprPending() or
-                self.proc_callPending()) # or
+    def exprPending(self, peek=False):
+        return (self.literalPending(peek=peek) or
+                self.variablePending(peek=peek) or
+                self.if_exprPending(peek=peek) or
+                self.lambda_exprPending(peek=peek) or
+                self.set_exprPending(peek=peek) or
+                self.proc_callPending(peek=peek)) # or
                 # self.derived_exprPending())
 
-    def literalPending(self):
-        return (self.booleanPending() or
-                self.integerPending() or
-                self.stringPending() or
-                self.tuplePending() or
-                self.quote_exprPending())
+    def literalPending(self, peek=False):
+        return (self.booleanPending(peek=peek) or
+                self.integerPending(peek=peek) or
+                self.stringPending(peek=peek) or
+                self.tuplePending(peek=peek) or
+                self.quote_exprPending(peek=peek))
 
-    def datumPending(self):
-        return (self.booleanPending() or
-                self.integerPending() or
-                self.stringPending() or
-                self.tuplePending())
+    def datumPending(self, peek=False):
+        return (self.booleanPending(peek=peek) or
+                self.integerPending(peek=peek) or
+                self.stringPending(peek=peek) or
+                self.tuplePending(peek=peek))
 
-    def variablePending(self):
-        return self.check(Types.variable)
+    def variablePending(self, peek=False):
+        return self.check(Types.variable, peek=peek)
 
-    def if_exprPending(self):
-        return self.check(Types.kw_if)
+    def if_exprPending(self, peek=False):
+        return self.check(Types.kw_if, peek=peek)
 
-    def elifPending(self):
-        return self.check(Types.kw_elif)
+    def elifPending(self, peek=False):
+        return self.check(Types.kw_elif, peek=peek)
 
-    def elsePending(self):
-        return self.check(Types.kw_else)
+    def elsePending(self, peek=False):
+        return self.check(Types.kw_else, peek=peek)
 
-    def lambda_exprPending(self):
-        return self.check(Types.kw_lambda)
+    def lambda_exprPending(self, peek=False):
+        return self.check(Types.kw_lambda, peek=peek)
 
-    def set_exprPending(self):
-        return self.check(Types.kw_set)
+    def set_exprPending(self, peek=False):
+        return self.check(Types.kw_set, peek=peek)
 
-    def proc_callPending(self):
+    def proc_callPending(self, peek=False):
         # cant use expr here without some sort of recursion :(
-        return self.check(Types.oparen)
+        return (self.check(Types.variable, peek=peek) and self.check(Types.oparen, peek=True))
 
-    def derived_exprPending(self):
+    def derived_exprPending(self, peek=False):
         # derp
         pass
 
-    def booleanPending(self):
-        return self.check(Types.boolean)
+    def booleanPending(self, peek=False):
+        return self.check(Types.boolean, peek=peek)
 
-    def integerPending(self):
-        return self.check(Types.integer)
+    def integerPending(self, peek=False):
+        return self.check(Types.integer, peek=peek)
 
-    def stringPending(self):
-        return self.check(Types.string)
+    def stringPending(self, peek=False):
+        return self.check(Types.string, peek=peek)
 
-    def tuplePending(self):
-        return self.check(Types.obracket)
+    def tuplePending(self, peek=False):
+        return self.check(Types.obracket, peek=peek)
 
-    def quote_exprPending(self):
-        return self.check(Types.quote)
+    def quote_exprPending(self, peek=False):
+        return self.check(Types.quote, peek=peek)
 

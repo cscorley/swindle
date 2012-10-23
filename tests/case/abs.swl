@@ -5,4 +5,4 @@ def abs:
         else:
             x
 
-abs(-4)
+abs(neg(4))

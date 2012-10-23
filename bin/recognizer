@@ -24,8 +24,6 @@ def main(argv):
         print("illegal")
         print(e.message)
 
-        raise e
-
 
 if __name__ == '__main__':
     main(sys.argv)
