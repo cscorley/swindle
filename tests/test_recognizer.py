@@ -21,7 +21,11 @@ class RecognizerTestSuite(unittest.TestCase):
     def test_invalid_files_parsed(self):
         with self.assertRaises(parser.ParseError):
             recognizer.parse_file("tests/case/bad_abs.swl")
+
+        with self.assertRaises(parser.ParseError):
             recognizer.parse_file("tests/case/bad_mystring.swl")
+
+        with self.assertRaises(parser.ParseError):
             recognizer.parse_file("tests/case/bad_factorial.swl")
 
     def test_invalid_files_caught(self):

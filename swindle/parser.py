@@ -19,7 +19,6 @@ class Parser:
         self.next_token = None
         self.indent_level = [0] # a stack of the expected indentation levels.
 
-
         self.advance() # preload the first token
 
     def match(self, token_type, aux_pred=None, advance=True):
@@ -60,18 +59,21 @@ class Parser:
             self.curr_token = self.lexer.lex()
             self.next_token = self.lexer.lex()
 
+        if self.curr_token and self.curr_token.val_type == Types.unknown:
+            raise ParseError("What is this I don't even...")
+
     def program(self):
         self.form_list()
 
     def form_list(self):
         self.form()
-       # self.match(Types.whitespace, advance=False)
+        self.match(Types.whitespace, aux_pred=self.dedent, advance=False)
         self.opt_form_list()
 
     def opt_form_list(self):
         if self.formPending():
             self.form()
-       #     self.match(Types.whitespace, advance=False)
+            self.match(Types.whitespace, aux_pred=self.dedent, advance=False)
             self.opt_form_list()
 
     def form(self):
@@ -127,8 +129,8 @@ class Parser:
             self.lambda_expr()
         elif self.set_exprPending():
             self.set_expr()
-        else:
-            self.derived_expr()
+        #else:
+        #    self.derived_expr()
 
     def derived_expr(self):
         pass
@@ -248,8 +250,8 @@ class Parser:
                 self.if_exprPending() or
                 self.lambda_exprPending() or
                 self.set_exprPending() or
-                self.proc_callPending() or
-                self.derived_exprPending())
+                self.proc_callPending()) # or
+                # self.derived_exprPending())
 
     def literalPending(self):
         return (self.booleanPending() or
