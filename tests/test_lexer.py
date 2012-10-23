@@ -217,11 +217,16 @@ abs(-4)
             assert lexeme.aux == 12
 
             lexeme = l.lex()
-            assert lexeme.val == "-"
+            assert lexeme.val == "neg"
+            assert lexeme.val_type is Types.variable
 
+            lexeme = l.lex()
+            assert lexeme.val == "("
             lexeme = l.lex()
             assert lexeme.val == "x"
             assert lexeme.val_type is Types.variable
+            lexeme = l.lex()
+            assert lexeme.val == ")"
 
             lexeme = l.lex()
             assert lexeme.val_type is Types.whitespace

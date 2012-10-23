@@ -7,6 +7,7 @@ import os
 import sys
 import argparse
 from swindle.recognizer import parse_file
+from swindle.parser import ParseError
 
 def main(argv):
     aparser = argparse.ArgumentParser(description='Scan a file.')
@@ -22,6 +23,8 @@ def main(argv):
     except ParseError as e:
         print("illegal")
         print(e.message)
+
+        raise e
 
 
 if __name__ == '__main__':

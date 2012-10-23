@@ -4,7 +4,9 @@
 # author: Christopher S. Corley
 
 for each in `ls tests/case/*`; do
-    echo "\n\n********************"
+    echo ""
+    echo ""
+    echo "********************"
     echo "--------------------"
     echo $each " contents:"
     echo "--------------------"

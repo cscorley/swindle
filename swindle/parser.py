@@ -15,45 +15,63 @@ class ParseError(Exception):
 class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
-        self.curr = None
+        self.curr_token = None
+        self.next_token = None
         self.indent_level = [0] # a stack of the expected indentation levels.
+
 
         self.advance() # preload the first token
 
-    def match(self, token_type, aux_pred=None):
+    def match(self, token_type, aux_pred=None, advance=True):
         if not self.check(token_type, aux_pred):
-            if self.curr.val_type == Types.whitespace:
+            if self.curr_token is None:
+                pass # this is allowing for empty files
+            elif self.curr_token.val_type == Types.whitespace:
                 raise ParseError(
-"Unexpected indentation level on line %d" % self.curr.line_no)
+"Unexpected indention level on line %d" % self.curr_token.line_no)
             else:
                 raise ParseError(
 "Unexpected token on line %d, column %d: expected %s, but got %s." %
-(self.curr.line_no, self.curr.col_no, token_type, self.curr.val_type))
+(self.curr_token.line_no, self.curr_token.col_no, token_type, self.curr_token.val_type))
 
-        self.advance()
+        if advance:
+            self.advance()
 
-    def check(self, token_type, aux_pred=None):
-        if aux_pred:
-            return (self.curr.val_type == token_type
-                and aux_pred(self.curr.aux))
+    def check(self, token_type, aux_pred=None, peek=False):
+        if peek:
+            token = self.next_token
+        else:
+            token = self.curr_token
 
-        return (self.curr.val_type == token_type)
+        if token:
+            if aux_pred:
+                return (token.val_type == token_type
+                    and aux_pred(token.aux))
+
+            return (token.val_type == token_type)
+
+        return False
 
     def advance(self):
-        self.curr = self.lexer.lex()
+        if self.next_token:
+            self.curr_token = self.next_token
+            self.next_token = self.lexer.lex()
+        else:
+            self.curr_token = self.lexer.lex()
+            self.next_token = self.lexer.lex()
 
     def program(self):
         self.form_list()
 
     def form_list(self):
         self.form()
-        self.match(Types.whitespace, aux_pred=self.newline)
+       # self.match(Types.whitespace, advance=False)
         self.opt_form_list()
 
     def opt_form_list(self):
         if self.formPending():
             self.form()
-            self.match(Types.whitespace, aux_pred=self.newline)
+       #     self.match(Types.whitespace, advance=False)
             self.opt_form_list()
 
     def form(self):
@@ -80,12 +98,6 @@ class Parser:
         while x < self.indent_level[-1]:
             self.indent_level.pop()
 
-        if x == self.indent_level[-1]:
-            return True
-
-        return False
-
-    def newline(self, x):
         if x == self.indent_level[-1]:
             return True
 

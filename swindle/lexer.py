@@ -129,9 +129,9 @@ class Lexer:
                 or c == ':'
                 or c == '`'
                 or c == '['
-                or c == ']'
-                or c == '+'  # may need to pass these off to lex_number
-                or c == '-'):
+                or c == ']'):
+#                or c == '+'  # may need to pass these off to lex_number
+#                or c == '-'):
                 return Lexeme(c, self.line_no, self.col_no)
             elif c.isdigit():
                 self.saved_char = c

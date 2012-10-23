@@ -1,7 +1,7 @@
 def abs:
     lambda (x):
         if ( lt(x 0) ):
-            -x
+            neg(x)
         else:
             x
 
