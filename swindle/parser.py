@@ -129,18 +129,18 @@ class Parser:
         self.match(Types.variable)
 
     def expr(self):
-        if self.literalPending():
-            self.literal()
-        elif self.proc_callPending():
+        if self.proc_callPending():
             self.proc_call()
-        elif self.variablePending():
-            self.variable()
         elif self.if_exprPending():
             self.if_expr()
         elif self.lambda_exprPending():
             self.lambda_expr()
         elif self.set_exprPending():
             self.set_expr()
+        elif self.literalPending():
+            self.literal()
+        elif self.variablePending():
+            self.variable()
         #else:
         #    self.derived_expr()
 
