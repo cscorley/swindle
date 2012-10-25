@@ -95,16 +95,6 @@ class LexemeTestSuite(unittest.TestCase):
     def test_literals(self):
         """Make sure literals get the correct type"""
 
-        item = 'True'
-        l = lexeme.Lexeme(item, 0, 0)
-        assert l.val == item
-        assert l.val_type is Types.boolean
-
-        item = 'False'
-        l = lexeme.Lexeme(item, 0, 0)
-        assert l.val == item
-        assert l.val_type is Types.boolean
-
         item = '20'
         l = lexeme.Lexeme(item, 0, 0)
         assert l.val == item

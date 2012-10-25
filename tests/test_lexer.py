@@ -21,6 +21,9 @@ class LexerTestSuite(unittest.TestCase):
         lexeme = l.lex()
         assert lexeme.val == "0"
         assert lexeme.val_type is Types.integer
+        lexeme = l.lex()
+        assert lexeme.val == "\n"
+        assert lexeme.val_type is Types.newline
 
         l = lexer.Lexer(StringIO("\"String\"\n"))
         lexeme = l.lex()
@@ -30,6 +33,9 @@ class LexerTestSuite(unittest.TestCase):
         lexeme = l.lex()
         assert lexeme.val == "\"String\""
         assert lexeme.val_type is Types.string
+        lexeme = l.lex()
+        assert lexeme.val == "\n"
+        assert lexeme.val_type is Types.newline
 
         l = lexer.Lexer(StringIO("def\n"))
         lexeme = l.lex()
@@ -39,6 +45,9 @@ class LexerTestSuite(unittest.TestCase):
         lexeme = l.lex()
         assert lexeme.val == "def"
         assert lexeme.val_type is Types.kw_def
+        lexeme = l.lex()
+        assert lexeme.val == "\n"
+        assert lexeme.val_type is Types.newline
 
         l = lexer.Lexer(StringIO("\n\ndef\n"))
         lexeme = l.lex()
@@ -46,9 +55,15 @@ class LexerTestSuite(unittest.TestCase):
         assert lexeme.val_type is Types.whitespace
         assert lexeme.aux == 0
         lexeme = l.lex()
+        assert lexeme.val == "\n"
+        assert lexeme.val_type is Types.newline
+        lexeme = l.lex()
         assert lexeme.val == " "
         assert lexeme.val_type is Types.whitespace
         assert lexeme.aux == 0
+        lexeme = l.lex()
+        assert lexeme.val == "\n"
+        assert lexeme.val_type is Types.newline
         lexeme = l.lex()
         assert lexeme.val == " "
         assert lexeme.val_type is Types.whitespace
@@ -56,6 +71,9 @@ class LexerTestSuite(unittest.TestCase):
         lexeme = l.lex()
         assert lexeme.val == "def"
         assert lexeme.val_type is Types.kw_def
+        lexeme = l.lex()
+        assert lexeme.val == "\n"
+        assert lexeme.val_type is Types.newline
 
         l = lexer.Lexer(StringIO("True\n"))
         lexeme = l.lex()
@@ -64,7 +82,10 @@ class LexerTestSuite(unittest.TestCase):
         assert lexeme.aux == 0
         lexeme = l.lex()
         assert lexeme.val == "True"
-        assert lexeme.val_type is Types.boolean
+        assert lexeme.val_type is Types.variable
+        lexeme = l.lex()
+        assert lexeme.val == "\n"
+        assert lexeme.val_type is Types.newline
 
 
     def test_invalid_variables_caught(self):
@@ -159,6 +180,9 @@ abs(-4)
             assert lexeme.val == ":"
 
             lexeme = l.lex()
+            assert lexeme.val_type is Types.newline
+
+            lexeme = l.lex()
             assert lexeme.val_type is Types.whitespace
             assert lexeme.aux == 4
 
@@ -177,6 +201,9 @@ abs(-4)
 
             lexeme = l.lex()
             assert lexeme.val == ":"
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.newline
 
             lexeme = l.lex()
             assert lexeme.val_type is Types.whitespace
@@ -212,6 +239,9 @@ abs(-4)
             lexeme = l.lex()
             assert lexeme.val == ":"
 
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.newline
             lexeme = l.lex()
             assert lexeme.val_type is Types.whitespace
             assert lexeme.aux == 12
@@ -229,6 +259,9 @@ abs(-4)
             assert lexeme.val == ")"
 
             lexeme = l.lex()
+            assert lexeme.val_type is Types.newline
+
+            lexeme = l.lex()
             assert lexeme.val_type is Types.whitespace
             assert lexeme.aux == 8
 
@@ -237,6 +270,9 @@ abs(-4)
 
             lexeme = l.lex()
             assert lexeme.val == ":"
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.newline
 
             lexeme = l.lex()
             assert lexeme.val_type is Types.whitespace
@@ -250,11 +286,17 @@ abs(-4)
 #            lexeme = l.lex()
 #            assert lexeme.val_type is Types.whitespace
 #            assert lexeme.aux == 0
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.newline
             lexeme = l.lex()
             assert lexeme.val == " "
             assert lexeme.val_type is Types.whitespace
             assert lexeme.aux == 0
 
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.newline
             lexeme = l.lex()
             assert lexeme.val == " "
             assert lexeme.val_type is Types.whitespace
@@ -283,6 +325,9 @@ abs(-4)
             lexeme = l.lex()
             assert lexeme.val == ")"
 
+
+            lexeme = l.lex()
+            assert lexeme.val_type is Types.newline
 
 if __name__ == '__main__':
     unittest.main()

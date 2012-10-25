@@ -27,12 +27,19 @@ class Parser:
                 pass # this is allowing for empty files
             #elif self.curr_token.val_type == Types.whitespace:
             elif token_type == Types.whitespace:
-                raise ParseError(
-"Unexpected indention level on line %d" % self.curr_token.line_no)
+                if self.curr_token.aux is None:
+                    raise ParseError(
+    "Unexpected indention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
+                    self.curr_token.val_type, self.indent_level[-1]))
+                else:
+                    raise ParseError(
+    "Unexpected indention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
+                    self.curr_token.aux, self.indent_level[-1]))
             else:
                 raise ParseError(
-"Unexpected token on line %d, column %d: expected %s, but got %s." %
-(self.curr_token.line_no, self.curr_token.col_no, token_type, self.curr_token.val_type))
+    "Unexpected token on line %d, column %d: expected %s, but got %s with val='%s' and aux=%s." %
+    (self.curr_token.line_no, self.curr_token.col_no, token_type,
+        self.curr_token.val_type, self.curr_token.val, self.curr_token.aux))
 
         if advance:
             self.advance()
@@ -60,41 +67,6 @@ class Parser:
             self.curr_token = self.lexer.lex()
             self.next_token = self.lexer.lex()
 
-#        if self.curr_token and self.curr_token.val_type == Types.unknown:
-#            raise ParseError("What is this I don't even...")
-
-    def program(self):
-        self.form_list()
-
-    def form_list(self):
-        self.form()
-        self.opt_form_list()
-
-    def opt_form_list(self):
-        if (self.newlinePending() and self.formPending(peek=True)):
-            self.match(Types.whitespace, aux_pred=self.newline)
-            self.form()
-            self.opt_form_list()
-
-    def newlinePending(self, peek=False):
-        return self.check(Types.whitespace, aux_pred=self.newline, peek=peek)
-
-    def formPending(self, peek=False):
-        return (self.exprPending(peek=peek) or self.defnPending(peek=peek))
-
-    def form(self):
-        if self.defnPending():
-            self.defn()
-        else: #elif self.exprPending(): ?
-            self.expr()
-
-    def defn(self):
-        self.match(Types.kw_def)
-        self.variable()
-        self.start_nest()
-        self.expr()
-        self.end_nest()
-
     def indent(self, x):
         if x > self.indent_level[-1]:
             self.indent_level.append(x)
@@ -103,10 +75,14 @@ class Parser:
         return False
 
     def dedent(self, x):
-        while x < self.indent_level[-1]:
-            self.indent_level.pop()
+        #while x < self.indent_level[-1]:
+        #    self.indent_level.pop()
 
-        if x == self.indent_level[-1]:
+        #if x == self.indent_level[-1]:
+        #   return True
+
+        if x < self.indent_level[-1]:
+            self.indent_level.pop()
             return True
 
         return False
@@ -120,10 +96,52 @@ class Parser:
 
     def start_nest(self):
         self.match(Types.colon)
-        self.match(Types.whitespace, aux_pred=self.indent)
+        self.match(Types.newline)
+        self.match(Types.whitespace, aux_pred=self.indent) #, advance=False)
 
     def end_nest(self):
-        self.match(Types.whitespace, aux_pred=self.dedent)
+        #self.match(Types.newline)
+        self.match(Types.whitespace, aux_pred=self.dedent) #, advance=False)
+
+
+
+    def program(self):
+        self.form_list()
+
+    def form_list(self):
+        self.form()
+        self.opt_form_list()
+
+    def opt_form_list(self):
+        #if (self.newlinePending() and self.formPending(peek=True)):
+        if (self.whitespacePending() and self.formPending(peek=True)):
+            self.form()
+            self.opt_form_list()
+
+    def whitespacePending(self, peek=False):
+        return self.check(Types.whitespace, aux_pred=self.newline, peek=peek)
+
+    def newlinePending(self, peek=False):
+        return self.check(Types.newline, peek=peek)
+
+    def formPending(self, peek=False):
+        return (self.exprPending(peek=peek) or self.defnPending(peek=peek))
+
+    def form(self):
+        self.match(Types.whitespace, aux_pred=self.newline)
+        if self.defnPending():
+            self.defn()
+        else: #elif self.exprPending(): ?
+            self.expr()
+        self.match(Types.newline)
+
+    def defn(self):
+        self.match(Types.kw_def)
+        self.variable()
+        self.start_nest()
+        self.form_list()
+        self.end_nest()
+
 
     def variable(self):
         self.match(Types.variable)
@@ -139,10 +157,8 @@ class Parser:
             self.set_expr()
         elif self.literalPending():
             self.literal()
-        elif self.variablePending():
+        else:
             self.variable()
-        #else:
-        #    self.derived_expr()
 
     def derived_expr(self):
         pass
@@ -150,9 +166,7 @@ class Parser:
         # just expressions that are defined by the environment?
 
     def literal(self):
-        if self.booleanPending():
-            self.match(Types.boolean)
-        elif self.integerPending():
+        if self.integerPending():
             self.match(Types.integer)
         elif self.stringPending():
             self.match(Types.string)
@@ -166,14 +180,15 @@ class Parser:
         self.datum()
 
     def datum(self):
-        if self.booleanPending():
-            self.match(Types.boolean)
-        elif self.integerPending():
+        if self.integerPending():
             self.match(Types.integer)
         elif self.stringPending():
             self.match(Types.string)
         elif self.tuplePending():
             self.tuple()
+        else:
+            # for symbols?
+            self.variable()
 
     def tuple(self):
         self.match(Types.obracket)
@@ -264,14 +279,14 @@ class Parser:
                 # self.derived_exprPending())
 
     def literalPending(self, peek=False):
-        return (self.booleanPending(peek=peek) or
+        return (
                 self.integerPending(peek=peek) or
                 self.stringPending(peek=peek) or
                 self.tuplePending(peek=peek) or
                 self.quote_exprPending(peek=peek))
 
     def datumPending(self, peek=False):
-        return (self.booleanPending(peek=peek) or
+        return (
                 self.integerPending(peek=peek) or
                 self.stringPending(peek=peek) or
                 self.tuplePending(peek=peek))
@@ -301,9 +316,6 @@ class Parser:
     def derived_exprPending(self, peek=False):
         # derp
         pass
-
-    def booleanPending(self, peek=False):
-        return self.check(Types.boolean, peek=peek)
 
     def integerPending(self, peek=False):
         return self.check(Types.integer, peek=peek)

@@ -30,7 +30,7 @@ class Lexeme:
         string += "," + str(self.col_no) + ")\t"
         string += str(self.val_type)
         string += "\t" + str(self.val)
-        if self.aux:
+        if self.aux is not None:
             string += "\taux=" + str(self.aux)
         return string
 

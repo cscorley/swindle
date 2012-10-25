@@ -7,9 +7,7 @@ KEYWORDS = frozenset(["def",
                     "set!",
                     "if",
                     "elif",
-                    "else",
-                    "True",
-                    "False"
+                    "else"
                     ])
 PUNCTUATION = frozenset(":()")
 LITERALS_PUNC = frozenset("[]+-`")
@@ -25,7 +23,8 @@ Types = Enum([
     'kw_def', 'kw_lambda', 'kw_set', 'kw_if', 'kw_elif', 'kw_else',
     'colon', 'oparen', 'cparen',
     'obracket', 'cbracket', 'plus', 'minus', 'quote',
-    'whitespace', 'integer', 'string', 'boolean', 'variable',
+    'whitespace', 'newline',
+    'integer', 'string', 'variable',
     'unknown'])
 
 def get_type(val):
@@ -43,8 +42,6 @@ def get_type(val):
         return Types.kw_elif
     elif val == 'else':
         return Types.kw_else
-    elif val == 'True' or val == 'False':
-        return Types.boolean
     elif val == ':':
         return Types.colon
     elif val == '(':
@@ -63,6 +60,8 @@ def get_type(val):
         return Types.quote
     elif val == " ":
         return Types.whitespace
+    elif val == "\n":
+        return Types.newline
     elif val.isdigit():
         return Types.integer
     elif val.startswith('"'):

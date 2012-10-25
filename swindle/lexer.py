@@ -99,6 +99,9 @@ class Lexer:
                         self.comment_mode = False
                         self.tokenize_whitespace = True
                         self.whitespace_count = 0
+                        return Lexeme(c,
+                                self.line_no,
+                                self.col_no)
                 elif c == '#':
                     self.comment_mode = True
                 elif c == ' ':
@@ -108,6 +111,9 @@ class Lexer:
                     self.comment_mode = False
                     self.tokenize_whitespace = True
                     self.whitespace_count = 0
+                    return Lexeme(c,
+                            self.line_no,
+                            self.col_no)
                 else:
                     self.saved_char = c
                     return None

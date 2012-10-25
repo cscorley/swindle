@@ -2,13 +2,13 @@
 
 program: opt_form_list
 
-form_list: form *newline* opt_form_list
+form_list: form opt_form_list
 
 opt_form_list: *empty*
-             | form *newline* opt_form_list
+             | form opt_form_list
 
-form: defn
-    | expr
+form: defn *newline*
+    | expr *newline*
 
 defn: 'def' variable start_nest expr end_nest
 
@@ -24,10 +24,8 @@ expr: literal
     | lambda_expr
     | set_expr
     | proc_call
-    | *derived_expr*
 
-literal: boolean
-       | integer
+literal: integer
        | string
        | tuple
        | quote_expr
@@ -57,18 +55,17 @@ parameters: *empty*
 opt_variable_list: *empty*
                  | variable opt_variable_list
 
-
-# Data rules
-
-datum: boolean
-     | integer
+datum: integer
      | string
      | tuple
+     | variable
 
 tuple: '[' datum opt_datum_list ']'
 
 opt_datum_list: *empty*
               | datum opt_datum_list
+
+# Data rules
 
 identifier: letter opt_identifier
 
@@ -81,8 +78,6 @@ letter: 'a' | 'b' | 'c' | ... | 'z'
       | 'A' | 'B' | 'C' | ... | 'Z'
 
 digit: '0' | '1' | '2' | ... | '9'
-
-boolean: 'True' | 'False'
 
 integer: sign digits
 

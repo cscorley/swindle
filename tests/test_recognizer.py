@@ -17,6 +17,7 @@ class RecognizerTestSuite(unittest.TestCase):
         assert recognizer.parse_file("tests/case/mystring.swl") is True
         assert recognizer.parse_file("tests/case/factorial.swl") is True
         assert recognizer.parse_file("tests/case/mandelbrot.swl") is True
+        assert recognizer.parse_file("swindle/library.swl") is True
 
     def test_invalid_files_parsed(self):
         with self.assertRaises(parser.ParseError):
