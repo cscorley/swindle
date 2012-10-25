@@ -5,16 +5,32 @@
 
 import os
 import sys
-import argparse
+
+# stupid
+if sys.version_info[0] == 3:
+    if sys.version_info[1] >=2:
+        import argparse
+        ARGPARSE = True
+    else:
+        import optparse
+        ARGPARSE = False
+
 from swindle.scanner import scan
 
 def main(argv):
-    aparser = argparse.ArgumentParser(description='Scan a file.')
-    aparser.add_argument('files', metavar='file', type=str, nargs='+',
-                               help='a file for the scanner')
+    if ARGPARSE:
+        aparser = argparse.ArgumentParser(description='Recognize a file.')
+        aparser.add_argument('files', metavar='file', type=str, nargs='+',
+                                help='a file for the scanner')
+        args = aparser.parse_args()
+        files = args.files
+    else:
+        aparser = optparse.OptionParser(usage='%prog [options]', version='0.1')
+        (options, args) = aparser.parse_args()
+        files = args
 
-    args = aparser.parse_args()
-    scan(args.files[0])
+    for filename in files:
+        scan(filename)
 
 if __name__ == '__main__':
     main(sys.argv)

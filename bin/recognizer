@@ -1,28 +1,44 @@
 #!/usr/bin/env python3
-# scanner
+# recognizer 
 #
 # author: Christopher S. Corley
 
 import os
 import sys
-import argparse
+
+# stupid
+if sys.version_info[0] == 3:
+    if sys.version_info[1] >=2:
+        import argparse
+        ARGPARSE = True
+    else:
+        import optparse
+        ARGPARSE = False
+
 from swindle.recognizer import parse_file
 from swindle.parser import ParseError
 
 def main(argv):
-    aparser = argparse.ArgumentParser(description='Scan a file.')
-    aparser.add_argument('files', metavar='file', type=str, nargs='+',
-                               help='a file for the scanner')
+    if ARGPARSE:
+        aparser = argparse.ArgumentParser(description='Recognize a file.')
+        aparser.add_argument('files', metavar='file', type=str, nargs='+',
+                                help='a file for the scanner')
+        args = aparser.parse_args()
+        files = args.files
+    else:
+        aparser = optparse.OptionParser(usage='%prog [options]', version='0.1')
+        (options, args) = aparser.parse_args()
+        files = args
 
-    args = aparser.parse_args()
-    try:
-        if not parse_file(args.files[0]):
-            print("Could not open file for parsing")
-        else:
-            print("legal")
-    except ParseError as e:
-        print("illegal")
-        print(e.message)
+    for filename in files:
+        try:
+            if not parse_file(filename):
+                print("Could not open file for parsing")
+            else:
+                print("legal")
+        except ParseError as e:
+            print("illegal")
+            print(e.message)
 
 
 if __name__ == '__main__':

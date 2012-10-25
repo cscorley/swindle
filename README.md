@@ -7,8 +7,9 @@ forms. I might be burned at the stake for this.
 
 Requirements
 ============
-`swindle` runs on Python 3.2 or above. Additional package requirements
-(for unit testing) are as follows:
+`swindle` runs on Python 3.2 or above. Support for lower Python 3.x
+versions has been hacked in, so use at your own risk there.
+Additional package requirements (for unit testing) are as follows:
 
     nose==1.2.1
 
