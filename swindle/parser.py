@@ -17,11 +17,17 @@ class Parser:
         self.lexer = lexer
         self.curr_token = None
         self.next_token = None
-        self.indent_level = [0] # a stack of the expected indentation levels.
+        self.indent_level = [1] # a stack of the expected indentation levels.
+        self.matching_indent = False
+        self.matching_dedent = False
+        self.matching_newline = False
 
         self.advance() # preload the first token
 
     def match(self, token_type, aux_pred=None, advance=True):
+        if self.check(Types.unknown):
+            raise ParseError("Unknown token found.")
+
         if not self.check(token_type, aux_pred=aux_pred):
             if self.curr_token is None:
                 pass # this is allowing for empty files
@@ -41,7 +47,27 @@ class Parser:
     (self.curr_token.line_no, self.curr_token.col_no, token_type,
         self.curr_token.val_type, self.curr_token.val, self.curr_token.aux))
 
+        if self.matching_indent and self.curr_token:
+            if not self.indent(self.curr_token.col_no):
+                raise ParseError(
+"Unexpected INdention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
+                self.curr_token.col_no, self.indent_level[-1]))
+            self.matching_indent = False
+        elif self.matching_dedent and self.curr_token:
+            if not self.dedent(self.curr_token.col_no):
+                raise ParseError(
+"Unexpected DEdention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
+                self.curr_token.col_no, self.indent_level[-1]))
+            self.matching_dedent = False
+        elif self.matching_newline and self.curr_token:
+            if not self.newline(self.curr_token.col_no):
+                raise ParseError(
+"Unexpected newline level on line %d, got %s expecting %d" % (self.curr_token.line_no,
+                self.curr_token.col_no, self.indent_level[-1]))
+            self.matching_newline = False
+
         if advance:
+            #print("Matched %s as %s" % (str(self.curr_token), str(token_type)))
             self.advance()
 
     def check(self, token_type, aux_pred=None, peek=False):
@@ -54,6 +80,7 @@ class Parser:
             if aux_pred:
                 return (token.val_type == token_type
                     and aux_pred(token.aux))
+
 
             return (token.val_type == token_type)
 
@@ -75,15 +102,11 @@ class Parser:
         return False
 
     def dedent(self, x):
-        #while x < self.indent_level[-1]:
-        #    self.indent_level.pop()
-
-        #if x == self.indent_level[-1]:
-        #   return True
-
-        if x < self.indent_level[-1]:
+        while x < self.indent_level[-1]:
             self.indent_level.pop()
-            return True
+
+        if x == self.indent_level[-1]:
+           return True
 
         return False
 
@@ -93,17 +116,17 @@ class Parser:
 
         return False
 
-
     def start_nest(self):
         self.match(Types.colon)
         self.match(Types.newline)
-        self.match(Types.whitespace, aux_pred=self.indent) #, advance=False)
+#        self.check(Types.whitespace, aux_pred=self.indent) #, advance=False)
+        self.matching_indent = True
 
     def end_nest(self):
-        #self.match(Types.newline)
-        self.match(Types.whitespace, aux_pred=self.dedent) #, advance=False)
-
-
+        if not self.matching_newline:
+            self.match(Types.newline)
+        self.matching_dedent = True
+#        self.match(Types.whitespace, aux_pred=self.dedent) #, advance=False)
 
     def program(self):
         self.form_list()
@@ -112,9 +135,16 @@ class Parser:
         self.form()
         self.opt_form_list()
 
+    def form_block(self):
+        self.start_nest()
+        self.matching_newline = True
+        self.form_list()
+        self.end_nest()
+
     def opt_form_list(self):
         #if (self.newlinePending() and self.formPending(peek=True)):
-        if (self.whitespacePending() and self.formPending(peek=True)):
+        #if (self.whitespacePending() and self.formPending(peek=True)):
+        if self.formPending():
             self.form()
             self.opt_form_list()
 
@@ -128,20 +158,20 @@ class Parser:
         return (self.exprPending(peek=peek) or self.defnPending(peek=peek))
 
     def form(self):
-        self.match(Types.whitespace, aux_pred=self.newline)
+        #self.match(Types.whitespace, aux_pred=self.newline)
         if self.defnPending():
             self.defn()
-        else: #elif self.exprPending(): ?
+        #elif self.exprPending():
+        else:
             self.expr()
+        #if self.newlinePending():
         self.match(Types.newline)
+        self.matching_newline = True
 
     def defn(self):
         self.match(Types.kw_def)
         self.variable()
-        self.start_nest()
-        self.form_list()
-        self.end_nest()
-
+        self.form_block()
 
     def variable(self):
         self.match(Types.variable)
@@ -201,10 +231,7 @@ class Parser:
         self.match(Types.oparen)
         self.expr()
         self.match(Types.cparen)
-        self.start_nest()
-        #self.expr()
-        self.form_list()
-        self.end_nest()
+        self.form_block()
         self.opt_elifs()
         self.opt_else()
 
@@ -214,33 +241,23 @@ class Parser:
             self.match(Types.oparen)
             self.expr()
             self.match(Types.cparen)
-            self.start_nest()
-            #self.expr()
-            self.form_list()
-            self.end_nest()
+            self.form_block()
             self.opt_elifs()
 
     def opt_else(self):
         if self.elsePending():
             self.match(Types.kw_else)
-            self.start_nest()
-            #self.expr()
-            self.form_list()
-            self.end_nest()
+            self.form_block()
 
     def lambda_expr(self):
         self.match(Types.kw_lambda)
         self.parameters()
-        self.start_nest()
-        self.form_list()
-        self.end_nest()
+        self.form_block()
 
     def set_expr(self):
         self.match(Types.kw_set)
         self.variable()
-        self.start_nest()
-        self.expr()
-        self.end_nest()
+        self.form_block()
 
     def proc_call(self):
 #        self.expr()

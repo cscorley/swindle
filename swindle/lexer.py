@@ -11,7 +11,7 @@ class Lexer:
         # fileptr is generally a TextIOWrapper when reading from a file
         self.fileptr = fileptr
 
-        self.tokenize_whitespace = True # like python, we tokenize all whitespace
+        self.tokenize_whitespace = False # like python, we tokenize all whitespace
         self.whitespace_count = 0
         self.comment_mode = False
 
@@ -109,7 +109,7 @@ class Lexer:
                 elif c == '\n':
                     # begin tokenizing whitespace for indent
                     self.comment_mode = False
-                    self.tokenize_whitespace = True
+#                    self.tokenize_whitespace = True
                     self.whitespace_count = 0
                     return Lexeme(c,
                             self.line_no,
@@ -164,7 +164,7 @@ class Lexer:
             c = self.get_next_char()
 
         if (c not in PUNCTUATION
-            and get_type(c) is not Types.whitespace
+            and c != ' '
             and c != '\n'):
             self.make_error("Variable names must begin with a letter.")
 
@@ -185,7 +185,7 @@ class Lexer:
             c = self.get_next_char()
 
         if c and (c not in PUNCTUATION
-            and get_type(c) is not Types.whitespace
+            and c != ' '
             and c != '\n'):
             self.make_error("Variable names cannot contain character " + c)
 

@@ -58,8 +58,8 @@ def get_type(val):
         return Types.minus
     elif val == '`':
         return Types.quote
-    elif val == " ":
-        return Types.whitespace
+#    elif val == " ":
+#        return Types.whitespace
     elif val == "\n":
         return Types.newline
     elif val.isdigit():
