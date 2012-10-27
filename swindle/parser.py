@@ -22,13 +22,14 @@ class Parser:
 
         self.curr_token = self.lexer.lex()
         self.next_token = self.lexer.lex()
-        print("New parser")
+        #print("New parser")
 
     def match(self, token_type, aux_pred=None, advance=True):
-        if self.curr_token is None and not self.lexer.done:
-            raise ParseError("Your life. It's over.")
+        #print("Matching %s as %s" % (str(self.curr_token), str(token_type)))
 
-        if self.lexer.done and token_type:
+        if self.curr_token is None and not self.lexer.done:
+            raise ParseError("No token received from lexer when lexer wasn't finished.")
+        elif self.curr_token is None and self.lexer.done and not token_type == Types.newline:
             raise ParseError("Found EOF when expecting token %s" % token_type)
 
         if self.check(Types.unknown):
@@ -62,7 +63,6 @@ class Parser:
         if token_type == Types.newline:
             self.matching_newline = True
 
-        print("Matched %s as %s" % (str(self.curr_token), str(token_type)))
 
         if advance:
             self.advance()
@@ -113,14 +113,17 @@ class Parser:
         return False
 
     def start_nest(self):
+        #print("SNEST")
         self.match(Types.colon)
         self.match(Types.newline)
         self.matching_newline = False
         self.matching_indent = True
 
     def end_nest(self):
+        #print("ENEST")
         if not self.matching_newline:
             self.match(Types.newline)
+        self.matching_newline = False
         self.matching_dedent = True
 
     def program(self):
@@ -147,20 +150,24 @@ class Parser:
         return self.check(Types.newline, peek=peek)
 
     def formPending(self, peek=False):
+        return (self.exprPending(peek=peek) or self.defnPending(peek=peek))
+
         if peek and self.next_token:
             return (self.newline(self.next_token.col_no) and
             (self.exprPending(peek=peek) or self.defnPending(peek=peek)))
-        elif self.curr_token:
-            return (self.newline(self.curr_token.col_no) and
+        elif self.next_token is not None:
+            return (self.newline(self.next_token.col_no) and
             (self.exprPending(peek=peek) or self.defnPending(peek=peek)))
+
+        #print("Form not pending?")
 
         return False
 
     def form(self):
         if self.defnPending():
             self.defn()
-        elif self.exprPending():
-        #else:
+        #elif self.exprPending():
+        else:
             self.expr()
 
     def defn(self):
