@@ -17,6 +17,7 @@ class RecognizerTestSuite(unittest.TestCase):
         assert recognizer.parse_file("tests/case/factorial.swl") is True
         assert recognizer.parse_file("tests/case/mandelbrot.swl") is True
         assert recognizer.parse_file("tests/case/annoying.swl") is True
+        assert recognizer.parse_file("tests/case/tuple.swl") is True
         assert recognizer.parse_file("swindle/library/main.swl") is True
         assert recognizer.parse_file("tests/case/emptyfile") is True
 

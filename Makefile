@@ -1,6 +1,7 @@
-all: compile test
+all: compile 
 
 compile:
+	echo "Nothing to do here."
 
 test:
 	nosetests tests

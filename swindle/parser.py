@@ -18,21 +18,14 @@ class Parser:
         self.indent_level = [1] # a stack of the expected indentation levels.
 
         # magic flags
-        self.matching_indent = False
-        self.matching_dedent = False
-        self.matching_nodent = False
+        self.newline_seen = False
 
         # pre-load the first couple tokens
         self.curr_token = self.lexer.lex()
         self.next_token = self.lexer.lex()
-        print("\n\nNew parser")
 
     def match(self, token_type):
-        if (token_type == Types.newline and self.matching_nodent):
-                #and not (self.matching_dedent or self.matching_indent)):
-            return
-
-        print("Matching %s as %s" % (str(self.curr_token), str(token_type)))
+        #print("Matching %s as %s" % (str(self.curr_token), str(token_type)))
 
         # Handle special cases for no token and lexer progress.
         if (self.curr_token is None
@@ -49,57 +42,23 @@ class Parser:
         if self.check(Types.unknown):
             raise ParseError("Unknown token found.")
 
-        if self.curr_token is not None:
-            # Make sure the token is the right one
-            if not self.check(token_type):
-                raise ParseError("Unexpected token on line %d, column %d: "
-                    "expected %s, but got %s with val='%s' and aux=%s." % (
-                        self.curr_token.line_no,
-                        self.curr_token.col_no,
-                        token_type,
-                        self.curr_token.val_type,
-                        self.curr_token.val,
-                        self.curr_token.aux)
-                    )
-
-            # Is it indented as expected?
-            if self.matching_indent:
-                self.matching_indent = False
-                if not self.indent(self.curr_token.col_no):
-                    raise ParseError("Unexpected indention on line %d, "
-                        "got %s expecting %d" % (
-                            self.curr_token.line_no,
-                            self.curr_token.col_no,
-                            self.indent_level[-1])
-                        )
-
-            # Is it dedented as expected?
-            elif self.matching_dedent:
-                self.matching_dedent = False
-                if not self.dedent(self.curr_token.col_no):
-                    raise ParseError("Unexpected dedention on line %d, "
-                            "got %s expecting %d" % (
-                            self.curr_token.line_no,
-                            self.curr_token.col_no,
-                            self.indent_level[-1])
-                            )
-
-            # Is it on the same indention level as expected?
-            elif self.matching_nodent:
-                self.matching_nodent = False
-                if not self.newline(self.curr_token.col_no):
-                    raise ParseError("Incorrect indent on line %d, "
-                            "got %s expecting %d" % (
-                                self.curr_token.line_no,
-                                self.curr_token.col_no,
-                                self.indent_level[-1])
-                            )
+        # Make sure the token is the right one
+        if not self.check(token_type):
+            raise ParseError("Unexpected token on line %d, column %d: "
+                "expected %s, but got %s with val='%s' and aux=%s." % (
+                    self.curr_token.line_no,
+                    self.curr_token.col_no,
+                    token_type,
+                    self.curr_token.val_type,
+                    self.curr_token.val,
+                    self.curr_token.aux)
+                )
 
         # We just matched a terminator (newline), so be sure to match
         if token_type == Types.newline:
-            self.matching_nodent = True
+            self.newline_seen = True
         else:
-            self.matching_nodent = False
+            self.newline_seen = False
 
         self.advance()
 
@@ -138,24 +97,31 @@ class Parser:
         return False
 
     def newline(self, x):
-        print("N %d %d" % (x, self.indent_level[-1]))
+        #print("N %d %d" % (x, self.indent_level[-1]))
         if x == self.indent_level[-1]:
             return True
 
         return False
 
     def start_nest(self):
-        print("SNEST"+" "+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_nodent))
         self.match(Types.colon)
         self.match(Types.newline)
-        self.matching_nodent = False
-        self.matching_indent = True
+        if self.curr_token and not self.indent(self.curr_token.col_no):
+            raise ParseError("Unexpected indention level on line %d, "
+                "got %s expecting %d" % (
+                    self.curr_token.line_no,
+                    self.curr_token.col_no,
+                    self.indent_level[-1])
+                )
 
     def end_nest(self):
-        print("ENEST"+" "+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_nodent))
-        #self.match(Types.newline)
-        #self.matching_nodent = False
-        self.matching_dedent = True
+        if self.curr_token and not self.dedent(self.curr_token.col_no):
+            raise ParseError("Unexpected indention level on line %d, "
+                "got %s expecting %d" % (
+                    self.curr_token.line_no,
+                    self.curr_token.col_no,
+                    self.indent_level[-1])
+                )
 
     def program(self):
         self.opt_form_list()
@@ -176,14 +142,13 @@ class Parser:
 
     def newlinePending(self):
         val = self.newline(self.curr_token.col_no)
-        print("NLP "+str(val)+" "+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_nodent))
+        #print("NLP "+str(val)+" "+str(self.newline_seen))
         return val
 
     def formPending(self):
         val = (self.exprPending() or self.defnPending())
-        print("FORM %s %s" % (str(val), str(self.curr_token)))
+        #print("FORM %s %s" % (str(val), str(self.curr_token)))
         return val
-
 
     def form(self):
         if self.defnPending():
@@ -192,8 +157,9 @@ class Parser:
         else:
             self.expr()
 
-        print("FORMEND"+" "+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_nodent))
-        self.match(Types.newline)
+        #print("FORMEND"+" "+str(self.newline_seen))
+        if not self.newline_seen:
+            self.match(Types.newline)
 
     def defn(self):
         self.match(Types.kw_def)
@@ -244,9 +210,13 @@ class Parser:
 
     def tuple(self):
         self.match(Types.obracket)
-        self.datum()
         self.opt_datum_list()
         self.match(Types.cbracket)
+
+    def opt_datum_list(self):
+        if self.datumPending():
+            self.datum()
+            self.opt_datum_list()
 
     def if_expr(self):
         self.match(Types.kw_if)
