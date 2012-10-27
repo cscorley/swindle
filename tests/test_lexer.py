@@ -39,12 +39,6 @@ class LexerTestSuite(unittest.TestCase):
 
         l = lexer.Lexer(StringIO("\n\ndef\n"))
         lexeme = l.lex()
-        assert lexeme.val == "\n"
-        assert lexeme.val_type is Types.newline
-        lexeme = l.lex()
-        assert lexeme.val == "\n"
-        assert lexeme.val_type is Types.newline
-        lexeme = l.lex()
         assert lexeme.val == "def"
         assert lexeme.val_type is Types.kw_def
         lexeme = l.lex()
@@ -175,7 +169,6 @@ abs(-4)
             lexeme = l.lex()
             assert lexeme.val == ":"
 
-
             lexeme = l.lex()
             assert lexeme.val_type is Types.newline
 
@@ -208,10 +201,6 @@ abs(-4)
             lexeme = l.lex()
             assert lexeme.val == "x"
             assert lexeme.val_type is Types.variable
-
-            lexeme = l.lex()
-            assert lexeme.val_type is Types.newline
-
 
             lexeme = l.lex()
             assert lexeme.val_type is Types.newline

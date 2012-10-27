@@ -10,65 +10,60 @@ class ParseError(Exception):
      def __init__(self, value):
          self.message = value
      def __str__(self):
-         return repr(self.message)
+         return str(self.message)
 
 class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
-        self.curr_token = None
-        self.next_token = None
         self.indent_level = [1] # a stack of the expected indentation levels.
         self.matching_indent = False
         self.matching_dedent = False
         self.matching_newline = False
 
-        self.advance() # preload the first token
+        self.curr_token = self.lexer.lex()
+        self.next_token = self.lexer.lex()
+        print("New parser")
 
     def match(self, token_type, aux_pred=None, advance=True):
+        if self.curr_token is None and not self.lexer.done:
+            raise ParseError("Your life. It's over.")
+
         if self.check(Types.unknown):
             raise ParseError("Unknown token found.")
 
-        if not self.check(token_type, aux_pred=aux_pred):
-            if self.curr_token is None:
-                pass # this is allowing for empty files
-            #elif self.curr_token.val_type == Types.whitespace:
-            elif token_type == Types.whitespace:
-                if self.curr_token.aux is None:
-                    raise ParseError(
-    "Unexpected indention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
-                    self.curr_token.val_type, self.indent_level[-1]))
-                else:
-                    raise ParseError(
-    "Unexpected indention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
-                    self.curr_token.aux, self.indent_level[-1]))
-            else:
+        if not self.check(token_type, aux_pred=aux_pred) and self.curr_token:
                 raise ParseError(
     "Unexpected token on line %d, column %d: expected %s, but got %s with val='%s' and aux=%s." %
     (self.curr_token.line_no, self.curr_token.col_no, token_type,
         self.curr_token.val_type, self.curr_token.val, self.curr_token.aux))
 
         if self.matching_indent and self.curr_token:
+            self.matching_indent = False
             if not self.indent(self.curr_token.col_no):
                 raise ParseError(
 "Unexpected INdention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
                 self.curr_token.col_no, self.indent_level[-1]))
-            self.matching_indent = False
-        elif self.matching_dedent and self.curr_token:
+        if self.matching_dedent and self.curr_token:
+            self.matching_dedent = False
             if not self.dedent(self.curr_token.col_no):
                 raise ParseError(
 "Unexpected DEdention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
                 self.curr_token.col_no, self.indent_level[-1]))
-            self.matching_dedent = False
-        elif self.matching_newline and self.curr_token:
+        if self.matching_newline and self.curr_token:
+            self.matching_newline = False
             if not self.newline(self.curr_token.col_no):
                 raise ParseError(
 "Unexpected newline level on line %d, got %s expecting %d" % (self.curr_token.line_no,
                 self.curr_token.col_no, self.indent_level[-1]))
-            self.matching_newline = False
+
+        if token_type == Types.newline:
+            self.matching_newline = True
+
+        print("Matched %s as %s" % (str(self.curr_token), str(token_type)))
 
         if advance:
-            #print("Matched %s as %s" % (str(self.curr_token), str(token_type)))
             self.advance()
+
 
     def check(self, token_type, aux_pred=None, peek=False):
         if peek:
@@ -87,7 +82,7 @@ class Parser:
         return False
 
     def advance(self):
-        if self.next_token:
+        if self.next_token is not None:
             self.curr_token = self.next_token
             self.next_token = self.lexer.lex()
         else:
@@ -102,11 +97,9 @@ class Parser:
         return False
 
     def dedent(self, x):
-        while x < self.indent_level[-1]:
+        if x < self.indent_level[-1]:
             self.indent_level.pop()
-
-        if x == self.indent_level[-1]:
-           return True
+            return True
 
         return False
 
@@ -119,17 +112,16 @@ class Parser:
     def start_nest(self):
         self.match(Types.colon)
         self.match(Types.newline)
-#        self.check(Types.whitespace, aux_pred=self.indent) #, advance=False)
+        self.matching_newline = False
         self.matching_indent = True
 
     def end_nest(self):
-        if not self.matching_newline:
-            self.match(Types.newline)
+        #self.match(Types.newline)
         self.matching_dedent = True
-#        self.match(Types.whitespace, aux_pred=self.dedent) #, advance=False)
 
     def program(self):
-        self.form_list()
+        if self.formPending():
+            self.form_list()
 
     def form_list(self):
         self.form()
@@ -137,36 +129,35 @@ class Parser:
 
     def form_block(self):
         self.start_nest()
-        self.matching_newline = True
         self.form_list()
         self.end_nest()
 
     def opt_form_list(self):
         #if (self.newlinePending() and self.formPending(peek=True)):
-        #if (self.whitespacePending() and self.formPending(peek=True)):
-        if self.formPending():
+        if self.formPending():# and self.newlinePending(peek=True):
             self.form()
+            self.match(Types.newline)
             self.opt_form_list()
-
-    def whitespacePending(self, peek=False):
-        return self.check(Types.whitespace, aux_pred=self.newline, peek=peek)
 
     def newlinePending(self, peek=False):
         return self.check(Types.newline, peek=peek)
 
     def formPending(self, peek=False):
-        return (self.exprPending(peek=peek) or self.defnPending(peek=peek))
+        if peek and self.next_token:
+            return (self.newline(self.next_token.col_no) and
+            (self.exprPending(peek=peek) or self.defnPending(peek=peek)))
+        elif self.curr_token:
+            return (self.newline(self.curr_token.col_no) and
+            (self.exprPending(peek=peek) or self.defnPending(peek=peek)))
+
+        return False
 
     def form(self):
-        #self.match(Types.whitespace, aux_pred=self.newline)
         if self.defnPending():
             self.defn()
-        #elif self.exprPending():
-        else:
+        elif self.exprPending():
+        #else:
             self.expr()
-        #if self.newlinePending():
-        self.match(Types.newline)
-        self.matching_newline = True
 
     def defn(self):
         self.match(Types.kw_def)
@@ -189,11 +180,6 @@ class Parser:
             self.literal()
         else:
             self.variable()
-
-    def derived_expr(self):
-        pass
-        # is this even needed here? aren't these derived expressions
-        # just expressions that are defined by the environment?
 
     def literal(self):
         if self.integerPending():
@@ -292,8 +278,7 @@ class Parser:
                 self.if_exprPending(peek=peek) or
                 self.lambda_exprPending(peek=peek) or
                 self.set_exprPending(peek=peek) or
-                self.proc_callPending(peek=peek)) # or
-                # self.derived_exprPending())
+                self.proc_callPending(peek=peek))
 
     def literalPending(self, peek=False):
         return (
@@ -329,10 +314,6 @@ class Parser:
     def proc_callPending(self, peek=False):
         # cant use expr here without some sort of recursion :(
         return (self.check(Types.variable, peek=peek) and self.check(Types.oparen, peek=True))
-
-    def derived_exprPending(self, peek=False):
-        # derp
-        pass
 
     def integerPending(self, peek=False):
         return self.check(Types.integer, peek=peek)

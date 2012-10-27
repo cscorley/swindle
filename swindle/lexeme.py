@@ -29,7 +29,8 @@ class Lexeme:
         string = "(" + str(self.line_no)
         string += "," + str(self.col_no) + ")\t"
         string += str(self.val_type)
-        string += "\t" + str(self.val)
+        if not self.val == '\n':
+            string += "\t" + str(self.val)
         if self.aux is not None:
             string += "\taux=" + str(self.aux)
         return string

@@ -10,10 +10,10 @@ class Lexer:
     def __init__(self, fileptr):
         # fileptr is generally a TextIOWrapper when reading from a file
         self.fileptr = fileptr
+        self.done = False
 
-        self.tokenize_whitespace = False # like python, we tokenize all whitespace
-        self.whitespace_count = 0
         self.comment_mode = False
+        self.need_terminator = False
 
         # To emulate pushing things back to the stream
         self.saved_char = None
@@ -72,6 +72,7 @@ class Lexer:
             try:
                 c = next(self.character)
             except StopIteration:
+                self.done = True
                 return None
 
         return c
@@ -83,40 +84,29 @@ class Lexer:
         # Lexeme or None.
         c = self.get_next_char()
         while c:
-            if self.tokenize_whitespace:
-                if c == ' ':
-                    self.whitespace_count += 1
-                else:
-                    self.tokenize_whitespace = False
-                    self.saved_char = c
-                    return Lexeme(' ',
-                            self.line_no,
-                            self.col_no,
-                            aux=self.whitespace_count)
-            else:
-                if self.comment_mode:
-                    if c == '\n':
-                        self.comment_mode = False
-                        self.tokenize_whitespace = True
-                        self.whitespace_count = 0
-                        return Lexeme(c,
-                                self.line_no,
-                                self.col_no)
-                elif c == '#':
-                    self.comment_mode = True
-                elif c == ' ':
-                    pass
-                elif c == '\n':
-                    # begin tokenizing whitespace for indent
+            if self.comment_mode:
+                if c == '\n':
                     self.comment_mode = False
-#                    self.tokenize_whitespace = True
-                    self.whitespace_count = 0
-                    return Lexeme(c,
+                    if self.need_terminator:
+                        self.need_terminator = False
+                        return Lexeme(c,
                             self.line_no,
                             self.col_no)
-                else:
-                    self.saved_char = c
-                    return None
+            elif c == '#':
+                self.comment_mode = True
+            elif c == ' ':
+                pass
+            elif c == '\n':
+                # begin tokenizing whitespace for indent
+                self.comment_mode = False
+                if self.need_terminator:
+                    self.need_terminator = False
+                    return Lexeme(c,
+                        self.line_no,
+                        self.col_no)
+            else:
+                self.saved_char = c
+                return None
 
             c = self.get_next_char()
 
@@ -136,19 +126,22 @@ class Lexer:
                 or c == '`'
                 or c == '['
                 or c == ']'):
-#                or c == '+'  # may need to pass these off to lex_number
-#                or c == '-'):
+                self.need_terminator = True
                 return Lexeme(c, self.line_no, self.col_no)
             elif c.isdigit():
                 self.saved_char = c
+                self.need_terminator = True
                 return self.lex_number()
             elif c.isalpha():
                 self.saved_char = c
+                self.need_terminator = True
                 return self.lex_id_or_keyword()
             elif c == '"':
                 self.saved_char = c
+                self.need_terminator = True
                 return self.lex_string()
             else:
+                raise Exception("Unknown token found")
                 return Lexeme(c,
                         self.line_no,
                         self.col_no,
