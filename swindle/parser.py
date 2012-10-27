@@ -28,14 +28,17 @@ class Parser:
         if self.curr_token is None and not self.lexer.done:
             raise ParseError("Your life. It's over.")
 
+        if self.lexer.done and token_type:
+            raise ParseError("Found EOF when expecting token %s" % token_type)
+
         if self.check(Types.unknown):
             raise ParseError("Unknown token found.")
 
         if not self.check(token_type, aux_pred=aux_pred) and self.curr_token:
-                raise ParseError(
-    "Unexpected token on line %d, column %d: expected %s, but got %s with val='%s' and aux=%s." %
-    (self.curr_token.line_no, self.curr_token.col_no, token_type,
-        self.curr_token.val_type, self.curr_token.val, self.curr_token.aux))
+            raise ParseError(
+"Unexpected token on line %d, column %d: expected %s, but got %s with val='%s' and aux=%s." %
+(self.curr_token.line_no, self.curr_token.col_no, token_type,
+    self.curr_token.val_type, self.curr_token.val, self.curr_token.aux))
 
         if self.matching_indent and self.curr_token:
             self.matching_indent = False
@@ -116,7 +119,8 @@ class Parser:
         self.matching_indent = True
 
     def end_nest(self):
-        #self.match(Types.newline)
+        if not self.matching_newline:
+            self.match(Types.newline)
         self.matching_dedent = True
 
     def program(self):
@@ -220,6 +224,7 @@ class Parser:
         self.form_block()
         self.opt_elifs()
         self.opt_else()
+
 
     def opt_elifs(self):
         if self.elifPending():
