@@ -5,12 +5,13 @@ compile:
 test:
 	nosetests tests
 
-run:
+run: parse 
+
+parse:
 	sh bin/run.sh bin/recognizer
 
-runq:
-	sh bin/run.sh quiet bin/recognizer
-
+scan:
+	sh bin/run.sh bin/scanner
 
 init:
 	virtualenv env
