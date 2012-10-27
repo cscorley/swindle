@@ -20,14 +20,18 @@ class Parser:
         # magic flags
         self.matching_indent = False
         self.matching_dedent = False
-        self.matching_newline = False
+        self.matching_nodent = False
 
         # pre-load the first couple tokens
         self.curr_token = self.lexer.lex()
         self.next_token = self.lexer.lex()
-        #print("New parser")
+        print("\n\nNew parser")
 
     def match(self, token_type):
+        if (token_type == Types.newline and self.matching_nodent):
+                #and not (self.matching_dedent or self.matching_indent)):
+            return
+
         print("Matching %s as %s" % (str(self.curr_token), str(token_type)))
 
         # Handle special cases for no token and lexer progress.
@@ -81,8 +85,8 @@ class Parser:
                             )
 
             # Is it on the same indention level as expected?
-            elif self.matching_newline:
-                self.matching_newline = False
+            elif self.matching_nodent:
+                self.matching_nodent = False
                 if not self.newline(self.curr_token.col_no):
                     raise ParseError("Incorrect indent on line %d, "
                             "got %s expecting %d" % (
@@ -93,7 +97,9 @@ class Parser:
 
         # We just matched a terminator (newline), so be sure to match
         if token_type == Types.newline:
-            self.matching_newline = True
+            self.matching_nodent = True
+        else:
+            self.matching_nodent = False
 
         self.advance()
 
@@ -132,23 +138,23 @@ class Parser:
         return False
 
     def newline(self, x):
+        print("N %d %d" % (x, self.indent_level[-1]))
         if x == self.indent_level[-1]:
             return True
 
         return False
 
     def start_nest(self):
-        print("SNEST")
+        print("SNEST"+" "+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_nodent))
         self.match(Types.colon)
         self.match(Types.newline)
-        self.matching_newline = False
+        self.matching_nodent = False
         self.matching_indent = True
 
     def end_nest(self):
-        print("ENEST", str(self.matching_newline))
-        if not self.matching_newline:
-            self.match(Types.newline)
-        self.matching_newline = False
+        print("ENEST"+" "+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_nodent))
+        #self.match(Types.newline)
+        #self.matching_nodent = False
         self.matching_dedent = True
 
     def program(self):
@@ -169,11 +175,15 @@ class Parser:
             self.opt_form_list()
 
     def newlinePending(self):
-        print("NLP"+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_newline))
-        return self.newline(self.curr_token.col_no)
+        val = self.newline(self.curr_token.col_no)
+        print("NLP "+str(val)+" "+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_nodent))
+        return val
 
     def formPending(self):
-        return (self.exprPending() or self.defnPending())
+        val = (self.exprPending() or self.defnPending())
+        print("FORM %s %s" % (str(val), str(self.curr_token)))
+        return val
+
 
     def form(self):
         if self.defnPending():
@@ -182,8 +192,8 @@ class Parser:
         else:
             self.expr()
 
-        if self.matching_newline:
-            self.match(Types.newline)
+        print("FORMEND"+" "+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_nodent))
+        self.match(Types.newline)
 
     def defn(self):
         self.match(Types.kw_def)
