@@ -1,0 +1,11 @@
+def string:
+    "ARE WE THERE YET?"
+
+def annoying:
+    lambda:
+        print(string)
+        print(string)
+        print(string)
+        print(string)
+        print(string)
+        annoying()

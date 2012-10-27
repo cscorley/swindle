@@ -5,7 +5,7 @@ compile:
 test:
 	nosetests tests
 
-run: parse 
+run: parse
 
 parse:
 	sh bin/run.sh bin/recognizer

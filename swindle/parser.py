@@ -16,70 +16,95 @@ class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
         self.indent_level = [1] # a stack of the expected indentation levels.
+
+        # magic flags
         self.matching_indent = False
         self.matching_dedent = False
         self.matching_newline = False
 
+        # pre-load the first couple tokens
         self.curr_token = self.lexer.lex()
         self.next_token = self.lexer.lex()
         #print("New parser")
 
-    def match(self, token_type, aux_pred=None, advance=True):
-        #print("Matching %s as %s" % (str(self.curr_token), str(token_type)))
+    def match(self, token_type):
+        print("Matching %s as %s" % (str(self.curr_token), str(token_type)))
 
-        if self.curr_token is None and not self.lexer.done:
+        # Handle special cases for no token and lexer progress.
+        if (self.curr_token is None
+            and not self.lexer.done):
             raise ParseError("No token received from lexer when lexer wasn't finished.")
-        elif self.curr_token is None and self.lexer.done and not token_type == Types.newline:
+        # Allow for the last newline to go unmatched if we are EOF.
+        # May be a better way to do this, like... creating a EOF token.
+        elif (self.curr_token is None
+                and self.lexer.done
+                and not token_type == Types.newline):
             raise ParseError("Found EOF when expecting token %s" % token_type)
 
+        # We can't even do anything if we try to match on an unknown.
         if self.check(Types.unknown):
             raise ParseError("Unknown token found.")
 
-        if not self.check(token_type, aux_pred=aux_pred) and self.curr_token:
-            raise ParseError(
-"Unexpected token on line %d, column %d: expected %s, but got %s with val='%s' and aux=%s." %
-(self.curr_token.line_no, self.curr_token.col_no, token_type,
-    self.curr_token.val_type, self.curr_token.val, self.curr_token.aux))
+        if self.curr_token is not None:
+            # Make sure the token is the right one
+            if not self.check(token_type):
+                raise ParseError("Unexpected token on line %d, column %d: "
+                    "expected %s, but got %s with val='%s' and aux=%s." % (
+                        self.curr_token.line_no,
+                        self.curr_token.col_no,
+                        token_type,
+                        self.curr_token.val_type,
+                        self.curr_token.val,
+                        self.curr_token.aux)
+                    )
 
-        if self.matching_indent and self.curr_token:
-            self.matching_indent = False
-            if not self.indent(self.curr_token.col_no):
-                raise ParseError(
-"Unexpected INdention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
-                self.curr_token.col_no, self.indent_level[-1]))
-        if self.matching_dedent and self.curr_token:
-            self.matching_dedent = False
-            if not self.dedent(self.curr_token.col_no):
-                raise ParseError(
-"Unexpected DEdention level on line %d, got %s expecting %d" % (self.curr_token.line_no,
-                self.curr_token.col_no, self.indent_level[-1]))
-        if self.matching_newline and self.curr_token:
-            self.matching_newline = False
-            if not self.newline(self.curr_token.col_no):
-                raise ParseError(
-"Unexpected newline level on line %d, got %s expecting %d" % (self.curr_token.line_no,
-                self.curr_token.col_no, self.indent_level[-1]))
+            # Is it indented as expected?
+            if self.matching_indent:
+                self.matching_indent = False
+                if not self.indent(self.curr_token.col_no):
+                    raise ParseError("Unexpected indention on line %d, "
+                        "got %s expecting %d" % (
+                            self.curr_token.line_no,
+                            self.curr_token.col_no,
+                            self.indent_level[-1])
+                        )
 
+            # Is it dedented as expected?
+            elif self.matching_dedent:
+                self.matching_dedent = False
+                if not self.dedent(self.curr_token.col_no):
+                    raise ParseError("Unexpected dedention on line %d, "
+                            "got %s expecting %d" % (
+                            self.curr_token.line_no,
+                            self.curr_token.col_no,
+                            self.indent_level[-1])
+                            )
+
+            # Is it on the same indention level as expected?
+            elif self.matching_newline:
+                self.matching_newline = False
+                if not self.newline(self.curr_token.col_no):
+                    raise ParseError("Incorrect indent on line %d, "
+                            "got %s expecting %d" % (
+                                self.curr_token.line_no,
+                                self.curr_token.col_no,
+                                self.indent_level[-1])
+                            )
+
+        # We just matched a terminator (newline), so be sure to match
         if token_type == Types.newline:
             self.matching_newline = True
 
-
-        if advance:
-            self.advance()
+        self.advance()
 
 
-    def check(self, token_type, aux_pred=None, peek=False):
+    def check(self, token_type, peek=False):
         if peek:
             token = self.next_token
         else:
             token = self.curr_token
 
         if token:
-            if aux_pred:
-                return (token.val_type == token_type
-                    and aux_pred(token.aux))
-
-
             return (token.val_type == token_type)
 
         return False
@@ -113,22 +138,21 @@ class Parser:
         return False
 
     def start_nest(self):
-        #print("SNEST")
+        print("SNEST")
         self.match(Types.colon)
         self.match(Types.newline)
         self.matching_newline = False
         self.matching_indent = True
 
     def end_nest(self):
-        #print("ENEST")
+        print("ENEST", str(self.matching_newline))
         if not self.matching_newline:
             self.match(Types.newline)
         self.matching_newline = False
         self.matching_dedent = True
 
     def program(self):
-        if self.formPending():
-            self.form_list()
+        self.opt_form_list()
 
     def form_list(self):
         self.form()
@@ -140,28 +164,16 @@ class Parser:
         self.end_nest()
 
     def opt_form_list(self):
-        #if (self.newlinePending() and self.formPending(peek=True)):
-        if self.formPending():# and self.newlinePending(peek=True):
+        if self.formPending() and self.newlinePending():
             self.form()
-            self.match(Types.newline)
             self.opt_form_list()
 
-    def newlinePending(self, peek=False):
-        return self.check(Types.newline, peek=peek)
+    def newlinePending(self):
+        print("NLP"+str(self.matching_indent)+str(self.matching_dedent)+str(self.matching_newline))
+        return self.newline(self.curr_token.col_no)
 
-    def formPending(self, peek=False):
-        return (self.exprPending(peek=peek) or self.defnPending(peek=peek))
-
-        if peek and self.next_token:
-            return (self.newline(self.next_token.col_no) and
-            (self.exprPending(peek=peek) or self.defnPending(peek=peek)))
-        elif self.next_token is not None:
-            return (self.newline(self.next_token.col_no) and
-            (self.exprPending(peek=peek) or self.defnPending(peek=peek)))
-
-        #print("Form not pending?")
-
-        return False
+    def formPending(self):
+        return (self.exprPending() or self.defnPending())
 
     def form(self):
         if self.defnPending():
@@ -169,6 +181,9 @@ class Parser:
         #elif self.exprPending():
         else:
             self.expr()
+
+        if self.matching_newline:
+            self.match(Types.newline)
 
     def defn(self):
         self.match(Types.kw_def)
@@ -249,7 +264,8 @@ class Parser:
 
     def lambda_expr(self):
         self.match(Types.kw_lambda)
-        self.parameters()
+        if self.parametersPending():
+            self.parameters()
         self.form_block()
 
     def set_expr(self):
@@ -258,7 +274,6 @@ class Parser:
         self.form_block()
 
     def proc_call(self):
-#        self.expr()
         self.match(Types.variable)
         self.match(Types.oparen)
         self.opt_expr_list()
@@ -270,72 +285,74 @@ class Parser:
             self.opt_expr_list()
 
     def parameters(self):
-        if self.check(Types.oparen):
-            self.match(Types.oparen)
-            self.variable()
-            self.opt_variable_list()
-            self.match(Types.cparen)
+        self.match(Types.oparen)
+        self.variable()
+        self.opt_variable_list()
+        self.match(Types.cparen)
 
     def opt_variable_list(self):
         if self.variablePending():
             self.variable()
             self.opt_variable_list()
 
-    def defnPending(self, peek=False):
-        return self.check(Types.kw_def, peek=peek)
+    def parametersPending(self):
+        return self.check(Types.oparen)
 
-    def exprPending(self, peek=False):
-        return (self.literalPending(peek=peek) or
-                self.variablePending(peek=peek) or
-                self.if_exprPending(peek=peek) or
-                self.lambda_exprPending(peek=peek) or
-                self.set_exprPending(peek=peek) or
-                self.proc_callPending(peek=peek))
+    def defnPending(self):
+        return self.check(Types.kw_def)
 
-    def literalPending(self, peek=False):
+    def exprPending(self):
+        return (self.literalPending() or
+                self.variablePending() or
+                self.if_exprPending() or
+                self.lambda_exprPending() or
+                self.set_exprPending() or
+                self.proc_callPending())
+
+    def literalPending(self):
         return (
-                self.integerPending(peek=peek) or
-                self.stringPending(peek=peek) or
-                self.tuplePending(peek=peek) or
-                self.quote_exprPending(peek=peek))
+                self.integerPending() or
+                self.stringPending() or
+                self.tuplePending() or
+                self.quote_exprPending())
 
-    def datumPending(self, peek=False):
+    def datumPending(self):
         return (
-                self.integerPending(peek=peek) or
-                self.stringPending(peek=peek) or
-                self.tuplePending(peek=peek))
+                self.integerPending() or
+                self.stringPending() or
+                self.tuplePending())
 
-    def variablePending(self, peek=False):
-        return self.check(Types.variable, peek=peek)
+    def variablePending(self):
+        return self.check(Types.variable)
 
-    def if_exprPending(self, peek=False):
-        return self.check(Types.kw_if, peek=peek)
+    def if_exprPending(self):
+        return self.check(Types.kw_if)
 
-    def elifPending(self, peek=False):
-        return self.check(Types.kw_elif, peek=peek)
+    def elifPending(self):
+        return self.check(Types.kw_elif)
 
-    def elsePending(self, peek=False):
-        return self.check(Types.kw_else, peek=peek)
+    def elsePending(self):
+        return self.check(Types.kw_else)
 
-    def lambda_exprPending(self, peek=False):
-        return self.check(Types.kw_lambda, peek=peek)
+    def lambda_exprPending(self):
+        return self.check(Types.kw_lambda)
 
-    def set_exprPending(self, peek=False):
-        return self.check(Types.kw_set, peek=peek)
+    def set_exprPending(self):
+        return self.check(Types.kw_set)
 
-    def proc_callPending(self, peek=False):
+    def proc_callPending(self):
         # cant use expr here without some sort of recursion :(
-        return (self.check(Types.variable, peek=peek) and self.check(Types.oparen, peek=True))
+        return (self.check(Types.variable) and self.check(Types.oparen, peek=True))
 
-    def integerPending(self, peek=False):
-        return self.check(Types.integer, peek=peek)
+    def integerPending(self):
+        return self.check(Types.integer)
 
-    def stringPending(self, peek=False):
-        return self.check(Types.string, peek=peek)
+    def stringPending(self):
+        return self.check(Types.string)
 
-    def tuplePending(self, peek=False):
-        return self.check(Types.obracket, peek=peek)
+    def tuplePending(self):
+        return self.check(Types.obracket)
 
-    def quote_exprPending(self, peek=False):
-        return self.check(Types.quote, peek=peek)
+    def quote_exprPending(self):
+        return self.check(Types.quote)
 
