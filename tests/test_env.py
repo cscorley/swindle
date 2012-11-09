@@ -30,4 +30,5 @@ class EnvironmentTestSuite(unittest.TestCase):
 
 if __name__ == '__main__':
     LUSTH = True # LOLOLOLOL
-    unittest.main(verbosity=0)
+    #unittest.main(verbosity=0)
+    unittest.main()
