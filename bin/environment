@@ -1,0 +1,13 @@
+#!/bin/bash
+# environment
+#
+# author: Christopher S. Corley
+
+if [ -e ./tests ]; then
+    cd ./tests
+else
+    cd ../tests
+fi
+
+python3 test_env.py
+

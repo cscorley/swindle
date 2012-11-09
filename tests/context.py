@@ -14,4 +14,5 @@ import swindle.types as types
 import swindle.lexeme as lexeme
 import swindle.parser as parser
 import swindle.recognizer as recognizer
+import swindle.environment as environment
 from swindle.types import Types

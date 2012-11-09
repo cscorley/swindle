@@ -1,4 +1,4 @@
-all: compile 
+all: compile test
 
 compile:
 	echo "Nothing to do here."
@@ -6,7 +6,10 @@ compile:
 test:
 	nosetests tests
 
-run: parse
+run: environment
+
+environment:
+	sh bin/environment
 
 parse:
 	sh bin/run.sh bin/recognizer
