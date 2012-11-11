@@ -17,16 +17,36 @@ class EnvironmentTestSuite(unittest.TestCase):
         LUSTH = lusth
         super(EnvironmentTestSuite, self).__init__(methodName=methodName)
 
-    def test_setup(self):
+    def test_creation(self):
         e = environment.Environment(debug=LUSTH)
         assert type(e) == environment.Environment
-#        assert e.debug == False
+
+    def test_insertion(self):
         e = environment.Environment(debug=LUSTH)
+        e.env_insert('blah', 1)
+        assert 'blah' in e
+        assert e['blah'] == 1
+
+        e.env_insert('bleh', 'tacos!')
+        assert 'bleh' in e
+        assert e['bleh'] == 'tacos!'
+
+        with self.assertRaises(environment.EnvironmentError):
+            e.env_insert(None, None)
+        assert None not in e
+
+
+    def test_lookup(self):
         e = environment.Environment(debug=LUSTH)
+
+    def test_update(self):
         e = environment.Environment(debug=LUSTH)
+
+    def test_extend(self):
         e = environment.Environment(debug=LUSTH)
-        e = environment.Environment(debug=LUSTH)
-        pass
+
+
+
 
 if __name__ == '__main__':
     LUSTH = True # LOLOLOLOL
