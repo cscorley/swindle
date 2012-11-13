@@ -13,12 +13,11 @@ LUSTH=False
 class EnvironmentTestSuite(unittest.TestCase):
     """Basic test cases."""
 
-    def __init__(self, methodName='runTest', lusth=False):
-        LUSTH = lusth
-        super(EnvironmentTestSuite, self).__init__(methodName=methodName)
-
     def setUp(self):
         if LUSTH:
+            print("\n\n***********************************************")
+            print("                    NEXT TEST                  ")
+            print("***********************************************")
             self.e0 = environment.DebugEnvironment(
                     [('blah1', 1)
                     ,('blah2', 2)
@@ -34,8 +33,12 @@ class EnvironmentTestSuite(unittest.TestCase):
                     ,('blah5', 5)])
 
     def test_creation(self):
-        e = environment.Environment()
-        assert type(e) == environment.Environment
+        if LUSTH:
+            e = environment.DebugEnvironment()
+            assert type(e) == environment.DebugEnvironment
+        else:
+            e = environment.Environment()
+            assert type(e) == environment.Environment
         assert len(e) == 0
         assert len(self.e0) == 5
 
@@ -90,7 +93,6 @@ class EnvironmentTestSuite(unittest.TestCase):
 
 
     def test_extend(self):
-        """ TESTING """
         e = self.e0
 
         ne = e.env_extend([('blah1', 'one')])

@@ -22,8 +22,8 @@ class Environment(dict):
             super(Environment, self).__init__(iterable)
 
     def env_display(self):
-        print('Environment %d:' % self.depth, end=' ')
-        pprint.pprint(self, width=50)
+        print('Environment %d:' % self.depth)
+        pprint.pprint(self, indent=4, width=50)
 
         if self.parent:
             self.parent.env_display()
@@ -61,12 +61,12 @@ class Environment(dict):
         return value
 
     def env_extend(self, pairs):
-        # lol magic
-        return type(self)(pairs, parent=self)
+        return Environment(pairs, parent=self)
 
 class DebugEnvironment(Environment):
     def __init__(self, iterable=None, parent=None):
         self.parent = parent
+        self.depth = 0
         print("\n\n")
         if self.parent:
             print("Creating new local environment")
@@ -76,8 +76,10 @@ class DebugEnvironment(Environment):
         if iterable:
             super(DebugEnvironment, self).__init__(iterable=iterable, parent=parent)
 
+        self.env_display()
+
     def env_lookup(self, variable):
-        print("Looking up variable %s ... " % str(variable), end='')
+        print("(%d) Looking up variable %s ... " % (self.depth, str(variable)), end='')
         val = super(DebugEnvironment, self).env_lookup(variable)
         print("found %s:%s" % (str(variable), str(val)))
         self.env_display()
@@ -85,23 +87,23 @@ class DebugEnvironment(Environment):
 
     def env_update(self, variable, value):
         self.env_display()
-        print("Updating variable %s with value %s ... " % (str(variable), str(value)), end='')
+        print("(%d) Updating variable %s with value %s ... " % (self.depth, str(variable), str(value)), end='')
         val = super(DebugEnvironment, self).env_update(variable, value)
         print("replaced %s:%s" % (str(variable), str(val)))
         self.env_display()
         return val
 
     def env_insert(self, variable, value):
-        print("Inserting variable %s with value %s ... " % (str(variable), str(value)), end='')
+        print("(%d) Inserting variable %s with value %s ... " % (self.depth, str(variable), str(value)), end='')
         val = super(DebugEnvironment, self).env_insert(variable, value)
         print("inserted %s:%s" % (str(variable), str(val)))
         self.env_display()
         return val
 
     def env_extend(self, pairs):
-        print("Extending environment with %s ... " % str(pairs), end='')
-        val = super(DebugEnvironment, self).env_extend(pairs)
-        print("success")
+        print("(%d) Extending environment with %s ... " % (self.depth, str(pairs)), end='')
+        val = DebugEnvironment(pairs, parent=self)
+        print(" ... success")
         val.env_display()
         return val
 
