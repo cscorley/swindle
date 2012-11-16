@@ -28,13 +28,21 @@ class Lexeme:
         self.right = None
 
     def __str__(self):
-        string = "(" + str(self.line_no)
+        string = "{"
+        string += "(" + str(self.line_no)
         string += "," + str(self.col_no) + ")\t"
         string += str(self.val_type)
         if not self.val == '\n':
             string += "\t" + str(self.val)
         if self.aux is not None:
             string += "\taux=" + str(self.aux)
+
+        if self.left or self.right:
+            string += "\n\t<< " + str(self.left)
+            string += "\n\t>> " + str(self.right)
+
+        string += "}\n"
+
         return string
 
     # Make self.left and self.right special properties so we can do some

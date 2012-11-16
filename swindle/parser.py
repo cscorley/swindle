@@ -6,6 +6,7 @@ import os
 import sys
 from swindle.types import Types
 from swindle.lexeme import Lexeme
+from swindle.environment import (Environment, EnvironmentLookupError, DebugEnvironment)
 
 class ParseError(Exception):
      def __init__(self, value):
@@ -24,6 +25,10 @@ class Parser:
         # pre-load the first couple tokens
         self.curr_token = self.lexer.lex()
         self.next_token = self.lexer.lex()
+
+        # variable forwarding detection stack
+        self.delays = list()
+
 
     def join(self, l_token, r_token):
         tree = Lexeme('', -1, -1, token_type = Types.JOIN)
@@ -134,26 +139,6 @@ class Parser:
                     self.indent_level[-1])
                 )
 
-    def program(self):
-        return self.opt_form_list()
-
-    def form_list(self):
-        return self.join(self.form(), self.opt_form_list())
-
-    def form_block(self):
-        tree = self.start_nest()
-        tree.right = self.form_list()
-        self.end_nest()
-
-        return tree
-
-    def opt_form_list(self):
-        tree = None
-        if self.formPending() and self.newlinePending():
-            tree = self.join(self.form(), self.opt_form_list())
-
-        return tree
-
     def newlinePending(self):
         val = self.newline(self.curr_token.col_no)
         #print("NLP "+str(val)+" "+str(self.newline_seen))
@@ -164,12 +149,34 @@ class Parser:
         #print("FORM %s %s" % (str(val), str(self.curr_token)))
         return val
 
-    def form(self):
+    def program(self):
+        e = DebugEnvironment()
+        return self.opt_form_list(e)
+
+    def form_list(self, env):
+        return self.join(self.form(env), self.opt_form_list(env))
+
+    def form_block(self, env):
+        tree = self.start_nest()
+        tree.right = self.form_list(env)
+        self.end_nest()
+
+        return tree
+
+    def opt_form_list(self, env):
+        tree = None
+        if self.formPending() and self.newlinePending():
+            tree = self.join(self.form(env), self.opt_form_list(env))
+
+        return tree
+
+
+    def form(self, env):
         if self.defnPending():
-            formtree = self.defn()
+            formtree = self.defn(env)
         #elif self.exprPending():
         else:
-            formtree = self.expr()
+            formtree = self.expr(env)
 
         #print("FORMEND"+" "+str(self.newline_seen))
         nl = None
@@ -178,142 +185,164 @@ class Parser:
 
         return self.join(formtree, nl)
 
-    def defn(self):
+    def defn(self, env):
         tree = self.match(Types.kw_def)
-        tree.left = self.variable()
-        tree.right = self.form_block()
+        tree.left = self.variable_decl(env)
+        tree.right = self.form_block(env)
 
         return tree
 
-    def variable(self):
-        return self.match(Types.variable)
+    def variable_use(self, env):
+        var = self.match(Types.variable)
+        env.env_lookup(var.val)
+        return var
 
-    def expr(self):
+    def variable_call(self, env):
+        var = self.match(Types.variable)
+        try:
+            env.env_lookup(var.val)
+        except EnvironmentLookupError as e:
+            self.delays.append(var)
+            #raise ParseError(str(e))
+        return var
+
+    def variable_decl(self, env):
+        var = self.match(Types.variable)
+        env.env_insert(var.val, var.val)
+        return var
+
+    def variable_set(self, env):
+        var = self.match(Types.variable)
+        env.env_update(var.val, var.val)
+        return var
+
+    def expr(self, env):
         if self.proc_callPending():
-            return self.proc_call()
+            return self.proc_call(env)
         elif self.if_exprPending():
-            return self.if_expr()
+            return self.if_expr(env)
         elif self.lambda_exprPending():
-            return self.lambda_expr()
+            return self.lambda_expr(env)
         elif self.set_exprPending():
-            return self.set_expr()
+            return self.set_expr(env)
         elif self.literalPending():
-            return self.literal()
+            return self.literal(env)
         else:
-            return self.variable()
+            return self.variable_use(env)
 
-    def literal(self):
+    def literal(self, env):
         if self.integerPending():
             return self.match(Types.integer)
         elif self.stringPending():
             return self.match(Types.string)
         elif self.tuplePending():
-            return self.tuple()
+            return self.tuple(env)
         else:
-            return self.quote_expr()
+            return self.quote_expr(env)
 
-    def quote_expr(self):
+    def quote_expr(self, env):
         tree = self.match(Types.quote)
-        tree.right = self.datum()
+        tree.right = self.datum(env)
 
         return tree
 
-    def datum(self):
+    def datum(self, env):
         if self.integerPending():
             return self.match(Types.integer)
         elif self.stringPending():
             return self.match(Types.string)
         elif self.tuplePending():
-            return self.tuple()
+            return self.tuple(env)
         else:
             # for symbols?
-            return self.variable()
+            return self.variable_use(env)
 
-    def tuple(self):
+    def tuple(self, env):
         tree = self.match(Types.obracket)
-        tree.right = self.opt_datum_list()
+        tree.right = self.opt_datum_list(env)
         tree.left = self.match(Types.cbracket)
 
         return tree
 
-    def opt_datum_list(self):
+    def opt_datum_list(self, env):
         tree = None
         if self.datumPending():
-            self.join(self.datum(), self.opt_datum_list())
+            self.join(self.datum(env), self.opt_datum_list(env))
 
         return tree
 
-    def if_expr(self):
+    def if_expr(self, env):
         tree = self.match(Types.kw_if)
         self.match(Types.oparen)
-        tree.left = self.expr()
+        tree.left = self.expr(env)
         self.match(Types.cparen)
-        tree.right = self.join(self.form_block(),
-                self.join(self.opt_elifs(), self.opt_else()))
+        tree.right = self.join(self.form_block(env),
+                self.join(self.opt_elifs(env), self.opt_else(env)))
 
         return tree
 
 
-    def opt_elifs(self):
+    def opt_elifs(self, env):
         tree = None
         if self.elifPending():
             tree = self.match(Types.kw_elif)
             self.match(Types.oparen)
-            tree.left = self.expr()
+            tree.left = self.expr(env)
             self.match(Types.cparen)
-            tree.right = self.join(self.form_block(), self.opt_elifs())
+            tree.right = self.join(self.form_block(env), self.opt_elifs(env))
 
         return tree
 
-    def opt_else(self):
+    def opt_else(self, env):
         tree = None
         if self.elsePending():
             tree = self.match(Types.kw_else)
-            tree.right = self.form_block()
+            tree.right = self.form_block(env)
 
         return tree
 
-    def lambda_expr(self):
+    def lambda_expr(self, env):
         tree = self.match(Types.kw_lambda)
+        local_env = env.env_extend()
         if self.parametersPending():
-            tree.left = self.parameters()
-        tree.right = self.form_block()
+            tree.left = self.parameters(local_env)
+        tree.right = self.form_block(local_env)
 
         return tree
 
-    def set_expr(self):
+    def set_expr(self, env):
         tree = self.match(Types.kw_set)
-        tree.left = self.variable()
-        tree.right = self.form_block()
+        tree.left = self.variable_set(env)
+        tree.right = self.form_block(env)
 
         return tree
 
-    def proc_call(self):
-        tree = self.match(Types.variable)
+    def proc_call(self, env):
+        tree = self.variable_call(env)
         tree.left = self.match(Types.oparen)
-        tree.right = self.opt_expr_list()
+        tree.right = self.opt_expr_list(env)
         self.match(Types.cparen)
 
         return tree
 
-    def opt_expr_list(self):
+    def opt_expr_list(self, env):
         tree = None
         if self.exprPending():
-            tree = self.join(self.expr(), self.opt_expr_list())
+            tree = self.join(self.expr(env), self.opt_expr_list(env))
 
         return tree
 
-    def parameters(self):
+    def parameters(self, env):
         tree = self.match(Types.oparen)
-        tree.left = self.join(self.variable(), self.opt_variable_list())
+        tree.left = self.join(self.variable_decl(env), self.opt_variable_list(env))
         tree.right = self.match(Types.cparen)
 
         return tree
 
-    def opt_variable_list(self):
+    def opt_variable_list(self, env):
         tree = None
         if self.variablePending():
-            tree = self.join(self.variable(), self.opt_variable_list())
+            tree = self.join(self.variable_decl(env), self.opt_variable_list(env))
 
         return tree
 

@@ -10,6 +10,9 @@ class EnvironmentError(Exception):
      def __str__(self):
          return str(self.message)
 
+class EnvironmentLookupError(EnvironmentError):
+    pass
+
 class Environment(dict):
     def __init__(self, iterable=None, parent=None):
         self.parent = parent
@@ -36,7 +39,7 @@ class Environment(dict):
         elif self.parent:
             return self.parent.env_lookup(variable)
         else:
-            raise EnvironmentError("Variable is unbound in the environment")
+            raise EnvironmentLookupError("Variable is unbound in the environment")
 
     def env_update(self, variable, value):
         if variable in self:
@@ -60,7 +63,7 @@ class Environment(dict):
 
         return value
 
-    def env_extend(self, pairs):
+    def env_extend(self, pairs=[]):
         return Environment(pairs, parent=self)
 
 class DebugEnvironment(Environment):
@@ -100,7 +103,7 @@ class DebugEnvironment(Environment):
         self.env_display()
         return val
 
-    def env_extend(self, pairs):
+    def env_extend(self, pairs=[]):
         print("(%d) Extending environment with %s ... " % (self.depth, str(pairs)), end='')
         val = DebugEnvironment(pairs, parent=self)
         print(" ... success")

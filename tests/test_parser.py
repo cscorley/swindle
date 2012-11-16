@@ -3,13 +3,23 @@
 #
 # author: Christopher S. Corley
 
-from context import (recognizer, parser, lexer, Types)
+from context import (recognizer, environment, parser, lexer, Types)
 
 import unittest
 from io import StringIO
 
 class ParserTestSuite(unittest.TestCase):
     """Basic test cases."""
+
+    def test_valid_files_parsed(self):
+        with open("tests/case/abs.swl") as f:
+            l = lexer.Lexer(f)
+            p = parser.Parser(l)
+            tree = p.program()
+
+            assert tree
+            print(tree)
+
 
     def test_parse_tree_empty(self):
         s = StringIO("")
@@ -23,16 +33,8 @@ class ParserTestSuite(unittest.TestCase):
         s = StringIO("var\n")
         l = lexer.Lexer(s)
         p = parser.Parser(l)
-        tree = p.program()
-
-        assert tree
-        assert tree.val_type == Types.JOIN
-        assert tree.left
-        assert tree.left.val_type == Types.JOIN
-        assert tree.left.left
-        assert tree.left.right
-        assert tree.left.left.val_type == Types.variable
-        assert tree.left.right.val_type == Types.newline
+        with self.assertRaises(environment.EnvironmentError):
+            tree = p.program()
 
     def test_parse_tree_def(self):
         s = StringIO("def var:\n    5\n")
@@ -53,8 +55,23 @@ class ParserTestSuite(unittest.TestCase):
         assert def_tree.right.val_type == Types.colon
         assert def_tree.right.left.val_type == Types.newline
         assert def_tree.right.right
+        def_body = def_tree.right.right
+        assert def_body.val_type == Types.JOIN
+        assert def_body.left
+        assert def_body.left.val_type == Types.JOIN
+        assert def_body.left.left.val_type == Types.integer
+        assert def_body.left.left.val == "5"
+        assert def_body.left.right.val_type == Types.newline
 
+    def test_parse_tree_def_lambda(self):
+        s = StringIO("def identity:\n    lambda(x):\n      x\n")
+        l = lexer.Lexer(s)
+        p = parser.Parser(l)
+        tree = p.program()
 
+        assert tree
+        print(tree)
+        assert tree.val_type == Types.JOIN
 
 
 if __name__ == '__main__':
