@@ -22,14 +22,14 @@ class Enum(set):
 Types = Enum([
     'kw_def', 'kw_lambda', 'kw_set', 'kw_if', 'kw_elif', 'kw_else',
     'colon', 'oparen', 'cparen',
-    'obracket', 'cbracket', 'plus', 'minus', 'quote',
-    'whitespace', 'newline',
+    'obracket', 'cbracket', 'quote',
+    'newline',
     'integer', 'string', 'variable',
-    'unknown'])
+    'UNKNOWN', 'JOIN'])
 
 def get_type(val):
     if val is None:
-        return Types.unknown
+        return Types.UNKNOWN
     elif val == 'def':
         return Types.kw_def
     elif val == 'lambda':
@@ -52,14 +52,8 @@ def get_type(val):
         return Types.obracket
     elif val == ']':
         return Types.cbracket
-    elif val == '+':
-        return Types.plus
-    elif val == '-':
-        return Types.minus
     elif val == '`':
         return Types.quote
-#    elif val == " ":
-#        return Types.whitespace
     elif val == "\n":
         return Types.newline
     elif val.isdigit():

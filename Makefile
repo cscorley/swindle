@@ -6,7 +6,7 @@ compile:
 test:
 	nosetests tests
 
-run: environment
+run: parse
 
 environment:
 	sh bin/environment

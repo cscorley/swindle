@@ -5,6 +5,7 @@
 import os
 import sys
 from swindle.types import Types
+from swindle.lexeme import Lexeme
 
 class ParseError(Exception):
      def __init__(self, value):
@@ -24,6 +25,12 @@ class Parser:
         self.curr_token = self.lexer.lex()
         self.next_token = self.lexer.lex()
 
+    def join(self, l_token, r_token):
+        tree = Lexeme('', -1, -1, token_type = Types.JOIN)
+        tree.left = l_token
+        tree.right = r_token
+        return tree
+
     def match(self, token_type):
         #print("Matching %s as %s" % (str(self.curr_token), str(token_type)))
 
@@ -39,7 +46,7 @@ class Parser:
             raise ParseError("Found EOF when expecting token %s" % token_type)
 
         # We can't even do anything if we try to match on an unknown.
-        if self.check(Types.unknown):
+        if self.check(Types.UNKNOWN):
             raise ParseError("Unknown token found.")
 
         # Make sure the token is the right one
@@ -60,7 +67,9 @@ class Parser:
         else:
             self.newline_seen = False
 
+        returning = self.curr_token
         self.advance()
+        return returning
 
 
     def check(self, token_type, peek=False):
@@ -104,8 +113,8 @@ class Parser:
         return False
 
     def start_nest(self):
-        self.match(Types.colon)
-        self.match(Types.newline)
+        tree = self.match(Types.colon)
+        tree.left = self.match(Types.newline)
         if self.curr_token and not self.indent(self.curr_token.col_no):
             raise ParseError("Unexpected indention level on line %d, "
                 "got %s expecting %d" % (
@@ -113,6 +122,8 @@ class Parser:
                     self.curr_token.col_no,
                     self.indent_level[-1])
                 )
+
+        return tree
 
     def end_nest(self):
         if self.curr_token and not self.dedent(self.curr_token.col_no):
@@ -124,21 +135,24 @@ class Parser:
                 )
 
     def program(self):
-        self.opt_form_list()
+        return self.opt_form_list()
 
     def form_list(self):
-        self.form()
-        self.opt_form_list()
+        return self.join(self.form(), self.opt_form_list())
 
     def form_block(self):
-        self.start_nest()
-        self.form_list()
+        tree = self.start_nest()
+        tree.right = self.form_list()
         self.end_nest()
 
+        return tree
+
     def opt_form_list(self):
+        tree = None
         if self.formPending() and self.newlinePending():
-            self.form()
-            self.opt_form_list()
+            tree = self.join(self.form(), self.opt_form_list())
+
+        return tree
 
     def newlinePending(self):
         val = self.newline(self.curr_token.col_no)
@@ -152,128 +166,156 @@ class Parser:
 
     def form(self):
         if self.defnPending():
-            self.defn()
+            formtree = self.defn()
         #elif self.exprPending():
         else:
-            self.expr()
+            formtree = self.expr()
 
         #print("FORMEND"+" "+str(self.newline_seen))
+        nl = None
         if not self.newline_seen:
-            self.match(Types.newline)
+            nl = self.match(Types.newline)
+
+        return self.join(formtree, nl)
 
     def defn(self):
-        self.match(Types.kw_def)
-        self.variable()
-        self.form_block()
+        tree = self.match(Types.kw_def)
+        tree.left = self.variable()
+        tree.right = self.form_block()
+
+        return tree
 
     def variable(self):
-        self.match(Types.variable)
+        return self.match(Types.variable)
 
     def expr(self):
         if self.proc_callPending():
-            self.proc_call()
+            return self.proc_call()
         elif self.if_exprPending():
-            self.if_expr()
+            return self.if_expr()
         elif self.lambda_exprPending():
-            self.lambda_expr()
+            return self.lambda_expr()
         elif self.set_exprPending():
-            self.set_expr()
+            return self.set_expr()
         elif self.literalPending():
-            self.literal()
+            return self.literal()
         else:
-            self.variable()
+            return self.variable()
 
     def literal(self):
         if self.integerPending():
-            self.match(Types.integer)
+            return self.match(Types.integer)
         elif self.stringPending():
-            self.match(Types.string)
+            return self.match(Types.string)
         elif self.tuplePending():
-            self.tuple()
+            return self.tuple()
         else:
-            self.quote_expr()
+            return self.quote_expr()
 
     def quote_expr(self):
-        self.match(Types.quote)
-        self.datum()
+        tree = self.match(Types.quote)
+        tree.right = self.datum()
+
+        return tree
 
     def datum(self):
         if self.integerPending():
-            self.match(Types.integer)
+            return self.match(Types.integer)
         elif self.stringPending():
-            self.match(Types.string)
+            return self.match(Types.string)
         elif self.tuplePending():
-            self.tuple()
+            return self.tuple()
         else:
             # for symbols?
-            self.variable()
+            return self.variable()
 
     def tuple(self):
-        self.match(Types.obracket)
-        self.opt_datum_list()
-        self.match(Types.cbracket)
+        tree = self.match(Types.obracket)
+        tree.right = self.opt_datum_list()
+        tree.left = self.match(Types.cbracket)
+
+        return tree
 
     def opt_datum_list(self):
+        tree = None
         if self.datumPending():
-            self.datum()
-            self.opt_datum_list()
+            self.join(self.datum(), self.opt_datum_list())
+
+        return tree
 
     def if_expr(self):
-        self.match(Types.kw_if)
+        tree = self.match(Types.kw_if)
         self.match(Types.oparen)
-        self.expr()
+        tree.left = self.expr()
         self.match(Types.cparen)
-        self.form_block()
-        self.opt_elifs()
-        self.opt_else()
+        tree.right = self.join(self.form_block(),
+                self.join(self.opt_elifs(), self.opt_else()))
+
+        return tree
 
 
     def opt_elifs(self):
+        tree = None
         if self.elifPending():
-            self.match(Types.kw_elif)
+            tree = self.match(Types.kw_elif)
             self.match(Types.oparen)
-            self.expr()
+            tree.left = self.expr()
             self.match(Types.cparen)
-            self.form_block()
-            self.opt_elifs()
+            tree.right = self.join(self.form_block(), self.opt_elifs())
+
+        return tree
 
     def opt_else(self):
+        tree = None
         if self.elsePending():
-            self.match(Types.kw_else)
-            self.form_block()
+            tree = self.match(Types.kw_else)
+            tree.right = self.form_block()
+
+        return tree
 
     def lambda_expr(self):
-        self.match(Types.kw_lambda)
+        tree = self.match(Types.kw_lambda)
         if self.parametersPending():
-            self.parameters()
-        self.form_block()
+            tree.left = self.parameters()
+        tree.right = self.form_block()
+
+        return tree
 
     def set_expr(self):
-        self.match(Types.kw_set)
-        self.variable()
-        self.form_block()
+        tree = self.match(Types.kw_set)
+        tree.left = self.variable()
+        tree.right = self.form_block()
+
+        return tree
 
     def proc_call(self):
-        self.match(Types.variable)
-        self.match(Types.oparen)
-        self.opt_expr_list()
+        tree = self.match(Types.variable)
+        tree.left = self.match(Types.oparen)
+        tree.right = self.opt_expr_list()
         self.match(Types.cparen)
+
+        return tree
 
     def opt_expr_list(self):
+        tree = None
         if self.exprPending():
-            self.expr()
-            self.opt_expr_list()
+            tree = self.join(self.expr(), self.opt_expr_list())
+
+        return tree
 
     def parameters(self):
-        self.match(Types.oparen)
-        self.variable()
-        self.opt_variable_list()
-        self.match(Types.cparen)
+        tree = self.match(Types.oparen)
+        tree.left = self.join(self.variable(), self.opt_variable_list())
+        tree.right = self.match(Types.cparen)
+
+        return tree
 
     def opt_variable_list(self):
+        tree = None
         if self.variablePending():
-            self.variable()
-            self.opt_variable_list()
+            tree = self.join(self.variable(), self.opt_variable_list())
+
+        return tree
 
     def parametersPending(self):
         return self.check(Types.oparen)

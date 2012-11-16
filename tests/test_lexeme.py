@@ -44,16 +44,6 @@ class LexemeTestSuite(unittest.TestCase):
         assert l.val == item
         assert l.val_type is Types.cbracket
 
-        item = '+'
-        l = lexeme.Lexeme(item, 0, 0)
-        assert l.val == item
-        assert l.val_type is Types.plus
-
-        item = '-'
-        l = lexeme.Lexeme(item, 0, 0)
-        assert l.val == item
-        assert l.val_type is Types.minus
-
         item = '`'
         l = lexeme.Lexeme(item, 0, 0)
         assert l.val == item
