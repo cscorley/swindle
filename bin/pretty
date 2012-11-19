@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+# pretty
+#
+# author: Christopher S. Corley
+
+import os
+import sys
+
+# stupid
+if sys.version_info[0] == 3:
+    if sys.version_info[1] >=2:
+        import argparse
+        ARGPARSE = True
+    else:
+        import optparse
+        ARGPARSE = False
+
+from swindle.pretty import pretty_file
+from swindle.parser import ParseError
+
+def main(argv):
+    if ARGPARSE:
+        aparser = argparse.ArgumentParser(description='Recognize a file.')
+        aparser.add_argument('files', metavar='file', type=str, nargs='+',
+                                help='a file for the scanner')
+        args = aparser.parse_args()
+        files = args.files
+    else:
+        aparser = optparse.OptionParser(usage='%prog [options]', version='0.1')
+        (options, args) = aparser.parse_args()
+        files = args
+
+    for filename in files:
+        try:
+            if not parse_file(filename):
+                print("Could not open file for parsing")
+        except ParseError as e:
+            print("Could not parse file %s" % filename)
+            print(e.message)
+
+
+if __name__ == '__main__':
+    main(sys.argv)
+

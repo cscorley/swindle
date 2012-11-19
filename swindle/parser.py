@@ -150,7 +150,7 @@ class Parser:
         return val
 
     def program(self):
-        e = DebugEnvironment()
+        e = Environment()
         return self.opt_form_list(e)
 
     def form_list(self, env):

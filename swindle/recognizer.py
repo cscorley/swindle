@@ -1,4 +1,4 @@
-# scanner.py
+# recognizer.py
 #
 # author: Christopher S. Corley
 
