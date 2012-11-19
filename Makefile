@@ -18,5 +18,5 @@ scan:
 	sh bin/run.sh bin/scanner
 
 init:
-	virtualenv env
-	pip install -r requirements.txt --use-mirrors
+	virtualenv --python=python3 env
+	. env/bin/activate && pip install -r requirements.txt --use-mirrors
