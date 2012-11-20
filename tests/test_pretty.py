@@ -28,6 +28,7 @@ class PrettyTestSuite(unittest.TestCase):
         tree = p.program()
         pstr = pretty.make_pretty(tree)
 
+        print(pstr)
         assert pstr == ""
 
 
@@ -38,6 +39,7 @@ class PrettyTestSuite(unittest.TestCase):
         tree = p.program()
         pstr = pretty.make_pretty(tree)
 
+        print(pstr)
         assert pstr == "def var:\n    5\n"
 
     def test_pretty_def_lambda(self):
@@ -47,6 +49,7 @@ class PrettyTestSuite(unittest.TestCase):
         tree = p.program()
         pstr = pretty.make_pretty(tree)
 
+        print(pstr)
         assert pstr == "def identity:\n    lambda(x):\n        x\n"
 
 

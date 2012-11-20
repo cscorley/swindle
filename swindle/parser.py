@@ -260,7 +260,7 @@ class Parser:
     def tuple(self, env):
         tree = self.match(Types.obracket)
         tree.right = self.opt_datum_list(env)
-        tree.left = self.match(Types.cbracket)
+        self.match(Types.cbracket)
 
         return tree
 
@@ -319,7 +319,7 @@ class Parser:
 
     def proc_call(self, env):
         tree = self.variable_call(env)
-        tree.left = self.match(Types.oparen)
+        self.match(Types.oparen)
         tree.right = self.opt_expr_list(env)
         self.match(Types.cparen)
 
@@ -334,8 +334,8 @@ class Parser:
 
     def parameters(self, env):
         tree = self.match(Types.oparen)
-        tree.left = self.join(self.variable_decl(env), self.opt_variable_list(env))
-        tree.right = self.match(Types.cparen)
+        tree.right = self.join(self.variable_decl(env), self.opt_variable_list(env))
+        self.match(Types.cparen)
 
         return tree
 

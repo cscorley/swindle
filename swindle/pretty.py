@@ -9,38 +9,50 @@ from swindle.lexer import Lexer
 from swindle.parser import Parser
 from swindle.types import Types
 
-def make_pretty(tree):
+def make_pretty(tree, depth=0):
+    cur_indent = 4*depth
     if tree is None:
         return ""
 
     t = tree.val_type
-    pstr = str()
+    pstr = " " * cur_indent
+    print(cur_indent, depth, "'%s'" % pstr)
     if t == Types.kw_def:
-        pstr += "def"
+        pstr += "def "
+        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     elif t == Types.kw_lambda:
-        pstr += "lambda"
+        pstr += "lambda "
+        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     elif t == Types.kw_set:
-        pstr += "set!"
+        pstr += "set! "
+        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     elif t == Types.kw_if:
-        pstr += "if"
+        pstr += "if "
+        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     elif t == Types.kw_elif:
-        pstr += "elif"
+        pstr += "elif "
+        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     elif t == Types.kw_else:
         pstr += "else"
+        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     elif t == Types.colon:
-        pstr += ":"
+        pstr = ":"
+        pstr += make_pretty(tree.left, depth+1) + make_pretty(tree.right, depth+1)
     elif t == Types.oparen:
-        pstr += "("
-    elif t == Types.cparen:
+        # if oparen, then we're in a param list
+        # (conditionals don't pick up oparens)
+        pstr = "("
+        pstr += make_pretty(tree.right, depth=0)
         pstr += ")"
     elif t == Types.obracket:
-        pstr += "["
-    elif t == Types.cbracket:
+        pstr = "["
+        pstr += make_pretty(tree.right, depth)
         pstr += "]"
     elif t == Types.quote:
-        pstr += "`"
+        pstr = "`"
+        pstr += make_pretty(tree.right, depth)
     elif t == Types.newline:
-        pstr += "\n"
+        pstr = "\n"
     elif t == Types.integer:
         pstr += str(tree.val)
     elif t == Types.string:
@@ -48,7 +60,7 @@ def make_pretty(tree):
     elif t == Types.variable:
         pstr += str(tree.val)
     elif t == Types.JOIN:
-        pstr += make_pretty(tree.left) + make_pretty(tree.right)
+        pstr = make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     else:
         raise Exception("Can't make this ugly thing pretty.")
 
