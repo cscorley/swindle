@@ -25,6 +25,7 @@ Types = Enum([
     'obracket', 'cbracket', 'quote',
     'newline',
     'integer', 'string', 'variable',
+    'form_list', 'parameter_list', 'expr_list',
     'UNKNOWN', 'JOIN'])
 
 def get_type(val):

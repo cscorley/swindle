@@ -30,8 +30,8 @@ class Parser:
         self.delays = list()
 
 
-    def join(self, l_token, r_token):
-        tree = Lexeme('', -1, -1, token_type = Types.JOIN)
+    def join(self, l_token, r_token, token_type=Types.JOIN):
+        tree = Lexeme('', -1, -1, token_type = token_type)
         tree.left = l_token
         tree.right = r_token
         return tree
@@ -154,7 +154,7 @@ class Parser:
         return self.opt_form_list(e)
 
     def form_list(self, env):
-        return self.join(self.form(env), self.opt_form_list(env))
+        return self.join(self.form(env), self.opt_form_list(env), token_type=Types.form_list)
 
     def form_block(self, env):
         tree = self.start_nest()
@@ -166,7 +166,7 @@ class Parser:
     def opt_form_list(self, env):
         tree = None
         if self.formPending() and self.newlinePending():
-            tree = self.join(self.form(env), self.opt_form_list(env))
+            tree = self.join(self.form(env), self.opt_form_list(env), token_type=Types.form_list)
 
         return tree
 
@@ -305,7 +305,7 @@ class Parser:
         tree = self.match(Types.kw_lambda)
         local_env = env.env_extend()
         if self.parametersPending():
-            tree.left = self.parameters(local_env)
+            tree.left = self.parameter_list(local_env)
         tree.right = self.form_block(local_env)
 
         return tree
@@ -319,7 +319,7 @@ class Parser:
 
     def proc_call(self, env):
         tree = self.variable_call(env)
-        self.match(Types.oparen)
+        tree.left = self.match(Types.oparen)
         tree.right = self.opt_expr_list(env)
         self.match(Types.cparen)
 
@@ -328,21 +328,21 @@ class Parser:
     def opt_expr_list(self, env):
         tree = None
         if self.exprPending():
-            tree = self.join(self.expr(env), self.opt_expr_list(env))
+            tree = self.join(self.expr(env), self.opt_expr_list(env), token_type=Types.expr_list)
 
         return tree
 
-    def parameters(self, env):
+    def parameter_list(self, env):
         tree = self.match(Types.oparen)
-        tree.right = self.join(self.variable_decl(env), self.opt_variable_list(env))
+        tree.right = self.join(self.variable_decl(env), self.opt_parameter_list(env), token_type=Types.parameter_list)
         self.match(Types.cparen)
 
         return tree
 
-    def opt_variable_list(self, env):
+    def opt_parameter_list(self, env):
         tree = None
         if self.variablePending():
-            tree = self.join(self.variable_decl(env), self.opt_variable_list(env))
+            tree = self.join(self.variable_decl(env), self.opt_parameter_list(env), token_type=Types.parameter_list)
 
         return tree
 

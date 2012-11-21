@@ -16,28 +16,43 @@ def make_pretty(tree, depth=0):
 
     t = tree.val_type
     pstr = " " * cur_indent
-    print(cur_indent, depth, "'%s'" % pstr)
+    assert len(pstr) % 4 == 0
+    print( depth, cur_indent,len(pstr), "'%s'" % pstr)
     if t == Types.kw_def:
         pstr += "def "
-        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
+        pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
     elif t == Types.kw_lambda:
         pstr += "lambda "
-        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
+        pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
     elif t == Types.kw_set:
         pstr += "set! "
-        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
+        pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
     elif t == Types.kw_if:
-        pstr += "if "
-        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
+        pstr += "if ("
+        pstr += make_pretty(tree.left, depth=0)
+        pstr += ")" + make_pretty(tree.right, depth)
     elif t == Types.kw_elif:
-        pstr += "elif "
-        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
+        pstr += "elif ("
+        pstr += make_pretty(tree.left, depth=0)
+        pstr += ")" + make_pretty(tree.right, depth)
     elif t == Types.kw_else:
         pstr += "else"
-        pstr += make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
+        pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
     elif t == Types.colon:
         pstr = ":"
         pstr += make_pretty(tree.left, depth+1) + make_pretty(tree.right, depth+1)
+    elif t == Types.form_list:
+        pstr = make_pretty(tree.left, depth)
+        if tree.right:
+            pstr += make_pretty(tree.right, depth)
+    elif t == Types.parameter_list:
+        pstr = make_pretty(tree.left, depth=0)
+        if tree.right:
+            pstr += " " + make_pretty(tree.right, depth=0)
+    elif t == Types.expr_list:
+        pstr = make_pretty(tree.left, depth=0)
+        if tree.right:
+            pstr += " " + make_pretty(tree.right, depth=0)
     elif t == Types.oparen:
         # if oparen, then we're in a param list
         # (conditionals don't pick up oparens)
@@ -59,12 +74,18 @@ def make_pretty(tree, depth=0):
         pstr += str(tree.val)
     elif t == Types.variable:
         pstr += str(tree.val)
+
+        # proc_call
+        if tree.left and tree.left.val_type == Types.oparen:
+            pstr += "("
+            pstr += make_pretty(tree.right, depth=0)
+            pstr += ")"
     elif t == Types.JOIN:
         pstr = make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     else:
         raise Exception("Can't make this ugly thing pretty.")
 
-    return pstr
+    return pstr#.rstrip(" ")
 
 
 def pretty_file(source, destination=sys.stdout):
@@ -77,7 +98,7 @@ def pretty_file(source, destination=sys.stdout):
             parser = Parser(lexer)
             tree = parser.program()
             pretty_string = make_pretty(tree)
-            destintation.write(pretty_string)
+            destination.write(pretty_string)
 
     except IOError as e:
         destination.write(str(e))

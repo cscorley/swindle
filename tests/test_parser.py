@@ -43,7 +43,7 @@ class ParserTestSuite(unittest.TestCase):
         tree = p.program()
 
         assert tree
-        assert tree.val_type == Types.JOIN
+        assert tree.val_type == Types.form_list
         assert tree.left
         assert tree.left.val_type == Types.JOIN
         assert tree.left.left
@@ -56,7 +56,7 @@ class ParserTestSuite(unittest.TestCase):
         assert def_tree.right.left.val_type == Types.newline
         assert def_tree.right.right
         def_body = def_tree.right.right
-        assert def_body.val_type == Types.JOIN
+        assert def_body.val_type == Types.form_list
         assert def_body.left
         assert def_body.left.val_type == Types.JOIN
         assert def_body.left.left.val_type == Types.integer
@@ -71,7 +71,7 @@ class ParserTestSuite(unittest.TestCase):
 
         assert tree
         print(tree)
-        assert tree.val_type == Types.JOIN
+        assert tree.val_type == Types.form_list
 
 
 if __name__ == '__main__':

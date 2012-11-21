@@ -49,8 +49,19 @@ class PrettyTestSuite(unittest.TestCase):
         tree = p.program()
         pstr = pretty.make_pretty(tree)
 
-        print(pstr)
-        assert pstr == "def identity:\n    lambda(x):\n        x\n"
+        assert pstr == "def identity:\n    lambda (x):\n        x\n"
+
+    def test_pretty_case_mandelbrot(self):
+        with open("tests/case/mandelbrot.swl") as s:
+            l = lexer.Lexer(s)
+            p = parser.Parser(l)
+            tree = p.program()
+            pstr = pretty.make_pretty(tree)
+
+            cstr = "def mandelbrot_iter:\n    lambda (iterations):\n        lambda (x y):\n            def helper:\n                lambda (iter_left r s):\n                    if (equal(iter_left 0)):\n                        0\n                    elif (gt(sqrt(add(square(r) square(s))) 2)):\n                        sub(iterations iter_left)\n                    else:\n                        helper(sub(iter_left 1) add(sub(square(r) square(s)) x) add(mult(2 r s) y))\n            helper(iterations 0 0)\n"
+            print(pstr)
+            print(cstr)
+            assert pstr == cstr
 
 
 if __name__ == '__main__':
