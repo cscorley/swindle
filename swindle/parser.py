@@ -56,15 +56,17 @@ class Parser:
 
         # Make sure the token is the right one
         if not self.check(token_type):
-            raise ParseError("Unexpected token on line %d, column %d: "
-                "expected %s, but got %s with val='%s' and aux=%s." % (
-                    self.curr_token.line_no,
-                    self.curr_token.col_no,
-                    token_type,
-                    self.curr_token.val_type,
-                    self.curr_token.val,
-                    self.curr_token.aux)
-                )
+            if self.curr_token:
+                raise ParseError("Unexpected token on line %d, column %d: "
+                    "expected %s, but got %s with val='%s' and aux=%s." % (
+                        self.curr_token.line_no,
+                        self.curr_token.col_no,
+                        token_type,
+                        self.curr_token.val_type,
+                        self.curr_token.val,
+                        self.curr_token.aux)
+                    )
+            raise ParseError("Missing expected token: %s" % token_type)
 
         # We just matched a terminator (newline), so be sure to match
         if token_type == Types.newline:
@@ -255,7 +257,7 @@ class Parser:
             return self.tuple(env)
         else:
             # for symbols?
-            return self.variable_use(env)
+            return self.match(Types.variable)
 
     def tuple(self, env):
         tree = self.match(Types.obracket)

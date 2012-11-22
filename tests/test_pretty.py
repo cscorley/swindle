@@ -31,6 +31,18 @@ class PrettyTestSuite(unittest.TestCase):
         print(pstr)
         assert pstr == ""
 
+    def test_pretty_quote_symbol(self):
+        s = StringIO("def s:\n  `symbol\n")
+        l = lexer.Lexer(s)
+        p = parser.Parser(l)
+        tree = p.program()
+        pstr = pretty.make_pretty(tree)
+
+        cstr = "def s:\n    `symbol\n"
+        print(pstr)
+        print(cstr)
+        assert pstr == cstr
+
 
     def test_pretty_def(self):
         s = StringIO("def var:\n  5\n")
@@ -74,6 +86,8 @@ class PrettyTestSuite(unittest.TestCase):
             print(pstr)
             print(cstr)
             assert pstr == cstr
+
+
 
 
 if __name__ == '__main__':
