@@ -267,7 +267,7 @@ class Parser:
     def opt_datum_list(self, env):
         tree = None
         if self.datumPending():
-            self.join(self.datum(env), self.opt_datum_list(env))
+            tree = self.join(self.datum(env), self.opt_datum_list(env), token_type=Types.datum_list)
 
         return tree
 

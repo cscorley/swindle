@@ -63,6 +63,18 @@ class PrettyTestSuite(unittest.TestCase):
             print(cstr)
             assert pstr == cstr
 
+    def test_pretty_case_tuples(self):
+        with open("tests/case/tuple.swl") as s:
+            l = lexer.Lexer(s)
+            p = parser.Parser(l)
+            tree = p.program()
+            pstr = pretty.make_pretty(tree)
+
+            cstr = 'def a_tuple:\n    ["Item1" 2 ["Nested" "Tuples"] 3 4]\n'
+            print(pstr)
+            print(cstr)
+            assert pstr == cstr
+
 
 if __name__ == '__main__':
     unittest.main()

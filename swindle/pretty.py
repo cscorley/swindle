@@ -17,7 +17,7 @@ def make_pretty(tree, depth=0):
     t = tree.val_type
     pstr = " " * cur_indent
     assert len(pstr) % 4 == 0
-    print( depth, cur_indent,len(pstr), "'%s'" % pstr)
+    #print( depth, cur_indent,len(pstr), "'%s'" % pstr)
     if t == Types.kw_def:
         pstr += "def "
         pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
@@ -43,13 +43,22 @@ def make_pretty(tree, depth=0):
         pstr += make_pretty(tree.left, depth+1) + make_pretty(tree.right, depth+1)
     elif t == Types.form_list:
         pstr = make_pretty(tree.left, depth)
+
+        #if depth == 0:
+        #    pstr += '\n'
+
         if tree.right:
             pstr += make_pretty(tree.right, depth)
+
     elif t == Types.parameter_list:
         pstr = make_pretty(tree.left, depth=0)
         if tree.right:
             pstr += " " + make_pretty(tree.right, depth=0)
     elif t == Types.expr_list:
+        pstr = make_pretty(tree.left, depth=0)
+        if tree.right:
+            pstr += " " + make_pretty(tree.right, depth=0)
+    elif t == Types.datum_list:
         pstr = make_pretty(tree.left, depth=0)
         if tree.right:
             pstr += " " + make_pretty(tree.right, depth=0)
@@ -60,12 +69,12 @@ def make_pretty(tree, depth=0):
         pstr += make_pretty(tree.right, depth=0)
         pstr += ")"
     elif t == Types.obracket:
-        pstr = "["
+        pstr += "["
         pstr += make_pretty(tree.right, depth)
         pstr += "]"
     elif t == Types.quote:
-        pstr = "`"
-        pstr += make_pretty(tree.right, depth)
+        pstr += "`"
+        pstr += make_pretty(tree.right, depth=0)
     elif t == Types.newline:
         pstr = "\n"
     elif t == Types.integer:
