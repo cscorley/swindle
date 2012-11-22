@@ -45,23 +45,36 @@ class ParserTestSuite(unittest.TestCase):
         assert tree
         assert tree.val_type == Types.form_list
         assert tree.left
+        assert tree.right is None
+
         assert tree.left.val_type == Types.JOIN
         assert tree.left.left
+        assert tree.left.right is None
+
         def_tree = tree.left.left
         assert def_tree.val_type == Types.kw_def
         assert def_tree.left
         assert def_tree.right
         assert def_tree.left.val_type == Types.variable
         assert def_tree.right.val_type == Types.colon
-        assert def_tree.right.left.val_type == Types.newline
+
+        assert def_tree.right.left
         assert def_tree.right.right
+        assert def_tree.right.left.val_type == Types.newline
+
         def_body = def_tree.right.right
         assert def_body.val_type == Types.form_list
         assert def_body.left
+        assert def_body.right is None
+
         assert def_body.left.val_type == Types.JOIN
+        assert def_body.left.left
+        assert def_body.left.right
+
         assert def_body.left.left.val_type == Types.integer
         assert def_body.left.left.val == "5"
         assert def_body.left.right.val_type == Types.newline
+
 
     def test_parse_tree_def_lambda(self):
         s = StringIO("def identity:\n    lambda(x):\n      x\n")
