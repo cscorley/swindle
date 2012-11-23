@@ -30,7 +30,7 @@ def eval_file(source, destination=sys.stdout):
         return False
 
     return True
-false = object()
+false = False
 def is_true(obj):
     return not is_false(obj)
 
@@ -51,7 +51,8 @@ def sub(*args):
     for arg in args:
         if tmp:
             tmp = tmp - arg
-        tmp = arg
+        else:
+            tmp = arg
     return tmp
 
 def add(*args):
@@ -59,7 +60,8 @@ def add(*args):
     for arg in args:
         if tmp:
             tmp = tmp + arg
-        tmp = arg
+        else:
+            tmp = arg
     return tmp
 
 def multi(*args):
@@ -73,7 +75,8 @@ def div(*args):
     for arg in args:
         if tmp:
             tmp = tmp / arg
-        tmp = arg
+        else:
+            tmp = arg
     return tmp
 
 def equal(*args):
@@ -83,7 +86,8 @@ def equal(*args):
         if tmp:
             if not (tmp == arg):
                 return False
-        tmp = arg
+        else:
+            tmp = arg
 
     return True
 
@@ -126,6 +130,10 @@ class Evaluator:
             return self.eval_set(tree, env)
         elif t == Types.kw_if:
             return self.eval_if(tree, env)
+        elif t == Types.kw_elif:
+            return self.eval_if(tree, env)
+        elif t == Types.kw_else:
+            return self.eval_else(tree, env)
         elif t == Types.colon:
             #raise Exception("Eval COLON")
             return self.eval(tree.right, env)
@@ -189,12 +197,6 @@ class Evaluator:
         env.env_update(var, val)
 
     def eval_if(self, tree, env):
-        if is_true(self.eval(tree.left, env)):
-            return self.eval(tree.right.left, env)
-        else:
-            return self.eval(tree.right.right, env)
-
-    def eval_elif(self, tree, env):
         if is_true(self.eval(tree.left, env)):
             return self.eval(tree.right.left, env)
         else:

@@ -278,8 +278,7 @@ class Parser:
         self.match(Types.oparen)
         tree.left = self.expr(env)
         self.match(Types.cparen)
-        tree.right = self.join(self.form_block(env),
-                self.join(self.opt_elifs(env), self.opt_else(env)))
+        tree.right = self.join(self.form_block(env), self.opt_elifs(env))
 
         return tree
 
@@ -292,6 +291,8 @@ class Parser:
             tree.left = self.expr(env)
             self.match(Types.cparen)
             tree.right = self.join(self.form_block(env), self.opt_elifs(env))
+        else:
+            tree = self.opt_else(env)
 
         return tree
 
