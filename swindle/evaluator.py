@@ -248,8 +248,7 @@ class Evaluator:
 
     def eval_tuple(self, tree, env):
         # maybe convert this to a list structure of cons?
-        tree.val = tuple(self.eval_datum_list(tree, env))
-        return tree
+        return list(self.eval_datum_list(tree, env))
 
     def eval_variable(self, tree, env):
         return env.env_lookup(tree.val)
