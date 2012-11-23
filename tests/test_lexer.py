@@ -206,6 +206,13 @@ abs(-4)
             assert lexeme.val_type is Types.newline
 
             lexeme = l.lex()
+            assert lexeme.val == "print"
+            assert lexeme.val_type is Types.variable
+
+            lexeme = l.lex()
+            assert lexeme.val == "("
+
+            lexeme = l.lex()
             assert lexeme.val == "abs"
             assert lexeme.val_type is Types.variable
 
@@ -213,6 +220,7 @@ abs(-4)
             assert lexeme.val == "("
 
             lexeme = l.lex()
+            assert lexeme.val == "neg"
             assert lexeme.val_type is Types.variable
 
             lexeme = l.lex()
@@ -221,6 +229,9 @@ abs(-4)
             lexeme = l.lex()
             assert lexeme.val == "4"
             assert lexeme.val_type is Types.integer
+
+            lexeme = l.lex()
+            assert lexeme.val == ")"
 
             lexeme = l.lex()
             assert lexeme.val == ")"
