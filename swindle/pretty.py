@@ -89,6 +89,8 @@ def make_pretty(tree, depth=0):
             pstr += "("
             pstr += make_pretty(tree.right, depth=0)
             pstr += ")"
+    elif t == Types.form:
+        pstr = make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     elif t == Types.JOIN:
         pstr = make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     else:

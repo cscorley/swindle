@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# test_scanner.py
+# test_pretty.py
 #
 # author: Christopher S. Corley
 

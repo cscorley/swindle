@@ -47,7 +47,7 @@ class ParserTestSuite(unittest.TestCase):
         assert tree.left
         assert tree.right is None
 
-        assert tree.left.val_type == Types.JOIN
+        assert tree.left.val_type == Types.form
         assert tree.left.left
         assert tree.left.right is None
 
@@ -67,7 +67,7 @@ class ParserTestSuite(unittest.TestCase):
         assert def_body.left
         assert def_body.right is None
 
-        assert def_body.left.val_type == Types.JOIN
+        assert def_body.left.val_type == Types.form
         assert def_body.left.left
         assert def_body.left.right
 
@@ -87,7 +87,7 @@ class ParserTestSuite(unittest.TestCase):
         assert tree.left
         assert tree.right is None
 
-        assert tree.left.val_type == Types.JOIN
+        assert tree.left.val_type == Types.form
         assert tree.left.left
         assert tree.left.right is None
 
@@ -108,7 +108,7 @@ class ParserTestSuite(unittest.TestCase):
         assert def_body.left
         assert def_body.right is None
 
-        assert def_body.left.val_type == Types.JOIN
+        assert def_body.left.val_type == Types.form
         assert def_body.left.left
         assert def_body.left.left.val_type == Types.kw_lambda
 
@@ -129,7 +129,7 @@ class ParserTestSuite(unittest.TestCase):
         assert lambda_body.left
         assert lambda_body.right is None
 
-        assert lambda_body.left.val_type == Types.JOIN
+        assert lambda_body.left.val_type == Types.form
         assert lambda_body.left.left
         assert lambda_body.left.left.val_type == Types.variable
         assert lambda_body.left.left.val == "x"
@@ -146,7 +146,7 @@ class ParserTestSuite(unittest.TestCase):
         assert tree.left
         assert tree.right is None
 
-        assert tree.left.val_type == Types.JOIN
+        assert tree.left.val_type == Types.form
         assert tree.left.left
         assert tree.left.right is None
 
@@ -167,7 +167,7 @@ class ParserTestSuite(unittest.TestCase):
         assert def_body.left
         assert def_body.right is None
 
-        assert def_body.left.val_type == Types.JOIN
+        assert def_body.left.val_type == Types.form
         assert def_body.left.left
         assert def_body.left.right
 

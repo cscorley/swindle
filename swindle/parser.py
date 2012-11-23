@@ -185,7 +185,7 @@ class Parser:
         if not self.newline_seen:
             nl = self.match(Types.newline)
 
-        return self.join(formtree, nl)
+        return self.join(formtree, nl, token_type=Types.form)
 
     def defn(self, env):
         tree = self.match(Types.kw_def)

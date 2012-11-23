@@ -66,6 +66,7 @@ class Environment(dict):
     def env_extend(self, pairs=[]):
         return Environment(pairs, parent=self)
 
+
 class DebugEnvironment(Environment):
     def __init__(self, iterable=None, parent=None):
         self.parent = parent

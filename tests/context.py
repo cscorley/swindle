@@ -16,4 +16,5 @@ import swindle.parser as parser
 import swindle.recognizer as recognizer
 import swindle.environment as environment
 import swindle.pretty as pretty
+import swindle.evaluator as evaluator
 from swindle.types import Types
