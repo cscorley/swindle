@@ -1,3 +1,5 @@
 
 def a_tuple:
     [ "Item1" 2 [ "Nested" "Tuples" ] 3 4 ]
+
+print(a_tuple)

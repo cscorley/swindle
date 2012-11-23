@@ -11,12 +11,82 @@ from swindle.parser import Parser
 from swindle.environment import Environment
 from collections import namedtuple
 
+def eval_file(source, destination=sys.stdout):
+    if type(source) != str or len(source) == 0:
+        return False
+
+    try:
+        with open(source) as f:
+            lexer = Lexer(f)
+            parser = Parser(lexer)
+            tree = parser.program()
+            e = Evaluator()
+            e.eval(tree, e.global_env.env_extend())
+
+
+    except IOError as e:
+        destination.write(str(e))
+        destination.write('\n')
+        return False
+
+    return True
 false = object()
 def is_true(obj):
     return not is_false(obj)
 
 def is_false(obj):
     return obj == false
+
+def neg(num):
+    return -num
+
+def lt(a, b):
+    return a < b
+
+def gt(a, b):
+    return a > b
+
+def sub(*args):
+    tmp = None
+    for arg in args:
+        if tmp:
+            tmp = tmp - arg
+        tmp = arg
+    return tmp
+
+def add(*args):
+    tmp = None
+    for arg in args:
+        if tmp:
+            tmp = tmp + arg
+        tmp = arg
+    return tmp
+
+def multi(*args):
+    result = 1
+    for arg in args:
+        result = result * arg
+    return result
+
+def div(*args):
+    tmp = None
+    for arg in args:
+        if tmp:
+            tmp = tmp / arg
+        tmp = arg
+    return tmp
+
+def equal(*args):
+    tmp = None
+    result = True
+    for arg in args:
+        if tmp:
+            if not (tmp == arg):
+                return False
+        tmp = arg
+
+    return True
+
 
 Closure = namedtuple('closure', 'parameters body env')
 Plosure = namedtuple('plosure', 'procedure')
@@ -30,7 +100,17 @@ class EvalError(Exception):
 
 class Evaluator:
     def __init__(self):
-        self.global_env = Environment([('print', Plosure(print))])
+        self.global_env = Environment([
+            ('print', Plosure(print)),
+            ('neg', Plosure(neg)),
+            ('equal', Plosure(equal)),
+            ('lt', Plosure(lt)),
+            ('gt', Plosure(gt)),
+            ('add', Plosure(add)),
+            ('sub', Plosure(sub)),
+            ('multi', Plosure(multi)),
+            ('div', Plosure(div)),
+            ])
 
     def eval(self, tree, env):
         if tree is None:
@@ -88,8 +168,8 @@ class Evaluator:
         val = self.eval(tree.right, env)
         env.env_insert(var, val)
 
-    def eval_lambda(tree, env):
-        return Closure(parameters=self.get_params(tree.left), body=tree.right)
+    def eval_lambda(self, tree, env):
+        return Closure(parameters=self.get_params(tree.left), body=tree.right, env=env)
 
     def get_params(self, tree):
         p = list()

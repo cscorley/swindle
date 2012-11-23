@@ -19,11 +19,17 @@ class EvaluatorTestSuite(unittest.TestCase):
             e = evaluator.Evaluator()
             et = e.eval(tree, e.global_env.env_extend())
 
-            print(et)
             assert tree
-            assert et
-            assert False
 
+
+        assert evaluator.eval_file("tests/case/abs.swl") is True
+        assert evaluator.eval_file("tests/case/mystring.swl") is True
+        assert evaluator.eval_file("tests/case/factorial.swl") is True
+        assert evaluator.eval_file("tests/case/mandelbrot.swl") is True
+        assert evaluator.eval_file("tests/case/annoying.swl") is True
+        assert evaluator.eval_file("tests/case/tuple.swl") is True
+        assert evaluator.eval_file("swindle/library/main.swl") is True
+        assert evaluator.eval_file("tests/case/emptyfile") is True
 
 
 if __name__ == '__main__':

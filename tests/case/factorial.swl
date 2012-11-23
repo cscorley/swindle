@@ -5,4 +5,4 @@ def fact:
         else:
             n
 
-fact(3)
+print(fact(3))
