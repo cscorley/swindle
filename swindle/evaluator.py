@@ -64,7 +64,7 @@ def add(*args):
             tmp = arg
     return tmp
 
-def multi(*args):
+def mul(*args):
     result = 1
     for arg in args:
         result = result * arg
@@ -112,7 +112,7 @@ class Evaluator:
             ('gt', Plosure(gt)),
             ('add', Plosure(add)),
             ('sub', Plosure(sub)),
-            ('multi', Plosure(multi)),
+            ('mul', Plosure(mul)),
             ('div', Plosure(div)),
             ])
 

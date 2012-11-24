@@ -1,8 +1,20 @@
 def fact:
     lambda (n):
         if ( gt(n 1)):
-            multi(n fact(sub(n 1)))
+            mul(n fact(sub(n 1)))
         else:
             n
 
 print(fact(3) fact(4) fact(5))
+
+def ifact:
+    lambda(n):
+        def iter:
+            lambda (n cur):
+                if (equal(n 0)):
+                    cur
+                else:
+                    iter(sub(n 1) mul(n cur))
+        iter(n 1)
+
+print(ifact(3) ifact(4) ifact(5))

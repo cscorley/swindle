@@ -39,7 +39,7 @@ class Environment(dict):
         elif self.parent:
             return self.parent.env_lookup(variable)
         else:
-            raise EnvironmentLookupError("Variable is unbound in the environment")
+            raise EnvironmentLookupError("Variable '%s' is unbound in the environment" % variable)
 
     def env_update(self, variable, value):
         if variable in self:
