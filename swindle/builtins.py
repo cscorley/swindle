@@ -8,8 +8,11 @@ def reader(*args):
     if len(args) == 0:
         stuff = input()
     else:
-        with open(args[0][0]) as f:
-            stuff = f.read().rstrip()
+        if len(args[0]) == 0:
+                stuff = sys.stdin.read().rstrip()
+        else:
+            with open(args[0][0]) as f:
+                stuff = f.read().rstrip()
 
     return stuff
 
