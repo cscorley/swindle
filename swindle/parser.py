@@ -6,7 +6,7 @@ import os
 import sys
 from swindle.types import Types
 from swindle.lexeme import Lexeme
-from swindle.environment import (Environment, EnvironmentLookupError, DebugEnvironment)
+from swindle.environment import (SetupEnvironment, EnvironmentLookupError)
 
 class ParseError(Exception):
      def __init__(self, value):
@@ -152,7 +152,8 @@ class Parser:
         return val
 
     def program(self):
-        e = Environment()
+        e = SetupEnvironment()
+        e = e.env_extend()
         return self.opt_form_list(e)
 
     def form_list(self, env):

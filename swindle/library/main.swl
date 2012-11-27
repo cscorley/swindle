@@ -3,19 +3,3 @@ def True:
 
 def False:
     equal(0 1)
-
-def cons:
-    lambda(a b):
-        lambda(item):
-            if (equal(item 1)):
-                a
-            elif (equal(item 2)):
-                b
-
-def car:
-    lambda(list):
-        list(1)
-
-def cdr:
-    lambda(list):
-        list(2)

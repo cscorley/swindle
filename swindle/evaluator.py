@@ -4,14 +4,16 @@
 
 import os
 import sys
+import math
+from io import StringIO
 
+from swindle.builtins import (Closure, Plosure)
 from swindle.types import Types
 from swindle.lexer import Lexer
 from swindle.parser import Parser
-from swindle.environment import Environment
-from collections import namedtuple
+from swindle.environment import SetupEnvironment
 
-def eval_file(source, destination=sys.stdout):
+def eval_file(source, argv=sys.argv, destination=sys.stdout):
     if type(source) != str or len(source) == 0:
         return False
 
@@ -20,7 +22,7 @@ def eval_file(source, destination=sys.stdout):
             lexer = Lexer(f)
             parser = Parser(lexer)
             tree = parser.program()
-            e = Evaluator()
+            e = Evaluator(argv)
             e.eval(tree, e.global_env.env_extend())
 
 
@@ -30,6 +32,7 @@ def eval_file(source, destination=sys.stdout):
         return False
 
     return True
+
 false = False
 def is_true(obj):
     return not is_false(obj)
@@ -37,63 +40,7 @@ def is_true(obj):
 def is_false(obj):
     return obj == false
 
-def neg(num):
-    return -num
 
-def lt(a, b):
-    return a < b
-
-def gt(a, b):
-    return a > b
-
-def sub(*args):
-    tmp = None
-    for arg in args:
-        if tmp:
-            tmp = tmp - arg
-        else:
-            tmp = arg
-    return tmp
-
-def add(*args):
-    tmp = None
-    for arg in args:
-        if tmp:
-            tmp = tmp + arg
-        else:
-            tmp = arg
-    return tmp
-
-def mul(*args):
-    result = 1
-    for arg in args:
-        result = result * arg
-    return result
-
-def div(*args):
-    tmp = None
-    for arg in args:
-        if tmp:
-            tmp = tmp / arg
-        else:
-            tmp = arg
-    return tmp
-
-def equal(*args):
-    tmp = None
-    result = True
-    for arg in args:
-        if tmp:
-            if not (tmp == arg):
-                return False
-        else:
-            tmp = arg
-
-    return True
-
-
-Closure = namedtuple('closure', 'parameters body env')
-Plosure = namedtuple('plosure', 'procedure')
 class EvalError(Exception):
      def __init__(self, value, tree):
          self.tree = tree
@@ -103,18 +50,16 @@ class EvalError(Exception):
          return self.string
 
 class Evaluator:
-    def __init__(self):
-        self.global_env = Environment([
-            ('print', Plosure(print)),
-            ('neg', Plosure(neg)),
-            ('equal', Plosure(equal)),
-            ('lt', Plosure(lt)),
-            ('gt', Plosure(gt)),
-            ('add', Plosure(add)),
-            ('sub', Plosure(sub)),
-            ('mul', Plosure(mul)),
-            ('div', Plosure(div)),
-            ])
+    def __init__(self, args=None):
+        self.args = args
+        self.global_env = SetupEnvironment(args)
+        self.repl_env = self.global_env.env_extend()
+
+    def eval_swndl(self, text):
+        l = Lexer(StringIO(text))
+        p = Parser(l)
+        tree = p.program()
+        return self.eval(tree, self.repl_env)
 
     def eval(self, tree, env):
         if tree is None:

@@ -3,6 +3,9 @@
 # author: Christopher S. Corley
 
 import pprint
+from swindle.builtins import (Closure, Plosure)
+import swindle.builtins as swndl
+import math
 
 class EnvironmentError(Exception):
      def __init__(self, value):
@@ -111,3 +114,46 @@ class DebugEnvironment(Environment):
         val.env_display()
         return val
 
+class SetupEnvironment(Environment):
+    def __init__(self, args=[]):
+        self.args = args
+        iterable = [
+            ('False', False),
+            ('True', True),
+            ('None', None),
+            ('len', Plosure(len)),
+            ('str', Plosure(str)),
+            ('int', Plosure(int)),
+            ('print', Plosure(print)),
+            ('input', Plosure(swndl.reader)),
+
+            # uh?
+            ('args', Plosure(self.argv_swndl)),
+
+            ('neg', Plosure(swndl.neg)),
+            ('equal', Plosure(swndl.equal)),
+            ('lt', Plosure(swndl.lt)),
+            ('gt', Plosure(swndl.gt)),
+            ('add', Plosure(swndl.add)),
+            ('sub', Plosure(swndl.sub)),
+            ('mul', Plosure(swndl.mul)),
+            ('div', Plosure(swndl.div)),
+            ('cons', Plosure(swndl.cons)),
+            ('car', Plosure(swndl.car)),
+            ('cdr', Plosure(swndl.cdr)),
+            ('list', Plosure(swndl.make_list)),
+
+            # maths
+            ('cos', Plosure(math.cos)),
+            ('sin', Plosure(math.sin)),
+            ('log', Plosure(math.log)),
+            ('tan', Plosure(math.tan)),
+            ('pow', Plosure(math.pow)),
+            ('factorial', Plosure(math.factorial)),
+            ('sqrt', Plosure(math.sqrt)),
+            ]
+
+        super(SetupEnvironment, self).__init__(iterable)
+
+    def argv_swndl(self):
+        return self.args
