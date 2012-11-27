@@ -11,6 +11,9 @@ run: swndl
 swndl:
 	sh bin/run.sh bin/swndl
 
+pretty:
+	sh bin/run.sh bin/pretty
+
 environment:
 	sh bin/environment
 
