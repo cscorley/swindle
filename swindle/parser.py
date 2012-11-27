@@ -27,7 +27,7 @@ class Parser:
         self.next_token = self.lexer.lex()
 
         # variable forwarding detection stack
-        self.delays = list()
+        self.delays = set()
 
 
     def join(self, l_token, r_token, token_type=Types.JOIN):
@@ -154,7 +154,12 @@ class Parser:
     def program(self):
         e = SetupEnvironment()
         e = e.env_extend()
-        return self.opt_form_list(e)
+        tree = self.opt_form_list(e)
+
+        if len(self.delays) > 0:
+            raise ParseError("Variables used, but never defined: %s" % str(self.delays))
+
+        return tree
 
     def form_list(self, env):
         return self.join(self.form(env), self.opt_form_list(env), token_type=Types.form_list)
@@ -205,12 +210,15 @@ class Parser:
         try:
             env.env_lookup(var.val)
         except EnvironmentLookupError as e:
-            self.delays.append(var)
+            self.delays.add(var.val)
             #raise ParseError(str(e))
         return var
 
     def variable_decl(self, env):
         var = self.match(Types.variable)
+        if var.val in self.delays:
+            self.delays.remove(var.val)
+
         env.env_insert(var.val, var.val)
         return var
 

@@ -70,7 +70,7 @@ class PrettyTestSuite(unittest.TestCase):
             tree = p.program()
             pstr = pretty.make_pretty(tree)
 
-            cstr = "def mandelbrot_iter:\n    lambda (iterations):\n        lambda (x y):\n            def helper:\n                lambda (iter_left r s):\n                    if (equal(iter_left 0)):\n                        0\n                    elif (gt(sqrt(add(square(r) square(s))) 2)):\n                        sub(iterations iter_left)\n                    else:\n                        helper(sub(iter_left 1) add(sub(square(r) square(s)) x) add(mult(2 r s) y))\n            helper(iterations 0 0)\n"
+            cstr = "def square:\n    lambda (x):\n        mul(x x)\ndef mandelbrot_iter:\n    lambda (iterations):\n        lambda (x y):\n            def helper:\n                lambda (iter_left r s):\n                    if (equal(iter_left 0)):\n                        0\n                    elif (gt(sqrt(add(square(r) square(s))) 2)):\n                        sub(iterations iter_left)\n                    else:\n                        helper(sub(iter_left 1) add(sub(square(r) square(s)) x) add(mul(2 r s) y))\n            helper(iterations 0 0)\n"
             print(pstr)
             print(cstr)
             assert pstr == cstr

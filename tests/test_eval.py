@@ -21,9 +21,5 @@ class EvaluatorTestSuite(unittest.TestCase):
         assert evaluator.eval_file("tests/case/factorial.swl") is True
         assert evaluator.eval_file("tests/case/mandelbrot.swl") is True
 
-        assert evaluator.eval_file("tests/case/rpn.swl") is True
-
-        assert False
-
 if __name__ == '__main__':
     unittest.main()

@@ -233,6 +233,7 @@ class Evaluator:
                 pairs.append((params[i], eargs[i]))
 
             xenv = senv.env_extend(pairs)
+            xenv.env_insert('self', xenv)
 
             return self.eval(body,xenv);
 

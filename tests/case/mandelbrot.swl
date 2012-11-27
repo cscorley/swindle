@@ -1,3 +1,7 @@
+def square:
+    lambda(x):
+        mul(x x)
+
 
 def mandelbrot_iter:
     lambda (iterations):
@@ -9,6 +13,6 @@ def mandelbrot_iter:
                     elif (gt( sqrt(add(square(r) square(s))) 2)):
                         sub(iterations iter_left)
                     else:
-                        helper( sub(iter_left 1) add(sub(square(r) square(s)) x) add(mult(2 r s) y))
+                        helper( sub(iter_left 1) add(sub(square(r) square(s)) x) add(mul(2 r s) y))
             helper(iterations 0 0)
 
