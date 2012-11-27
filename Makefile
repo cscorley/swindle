@@ -6,7 +6,10 @@ compile:
 test:
 	nosetests tests
 
-run: parse
+run: swndl
+
+swndl:
+	sh bin/run.sh bin/swndl
 
 environment:
 	sh bin/environment
