@@ -1,5 +1,0 @@
-def True:
-    equal(1 1)
-
-def False:
-    equal(0 1)

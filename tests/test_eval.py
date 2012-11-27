@@ -13,7 +13,6 @@ class EvaluatorTestSuite(unittest.TestCase):
 
     def test_valid_files_parsed(self):
         assert evaluator.eval_file("tests/case/emptyfile") is True
-        assert evaluator.eval_file("swindle/library/main.swl") is True
         assert evaluator.eval_file("tests/case/abs.swl") is True
         assert evaluator.eval_file("tests/case/mystring.swl") is True
         assert evaluator.eval_file("tests/case/annoying.swl") is True
