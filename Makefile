@@ -6,7 +6,7 @@ compile:
 test:
 	nosetests tests
 
-run: swndl
+run: swndl 
 
 swndl:
 	sh bin/run.sh bin/swndl
