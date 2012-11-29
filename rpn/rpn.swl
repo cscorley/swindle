@@ -17,6 +17,9 @@ def rpn:
                 elif (equal (car(r) "/")):
                     #print("div")
                     iter_stack(cons(div( car(cdr(c)) car(c) ) cdr(cdr(c))) cdr(r))
+                elif (equal (car(r) "^")):
+                    #print("div")
+                    iter_stack(cons(pow( car(cdr(c)) car(c) ) cdr(cdr(c))) cdr(r))
                 elif (equal (car(r) "cos")):
                     #print("cos")
                     iter_stack(cons(cos(car(c)) cdr(c)) cdr(r))
