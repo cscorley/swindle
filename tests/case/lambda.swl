@@ -1,0 +1,16 @@
+
+def tester:
+    lambda (x y):
+        lambda:
+            print(x)
+        lambda:
+            print(y)
+
+
+def res:
+    tester(2 3)
+
+res()
+
+# unfortunately, the grammar does not allow for proc_calls to be used
+# as expressions. e.g., tester(2 3)() would have been illegal.
