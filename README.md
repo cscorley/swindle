@@ -157,10 +157,8 @@ This would indeed print `6 20 120` to console.
 
 #### iteration
 
-Iteration also is achieved through recursion calls.
-
-** swindle does not properly support tail call optimization at the moment **
-
+Iteration also is achieved through recursion calls. 
+*Swindle does not properly support tail call optimization at the moment*.
 An iterative factorial could be implemented as so:
 
     def ifact:
