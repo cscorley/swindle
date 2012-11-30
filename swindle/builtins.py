@@ -3,6 +3,7 @@ from collections import namedtuple
 
 Closure = namedtuple('closure', 'parameters body env')
 Plosure = namedtuple('plosure', 'procedure')
+Cons = namedtuple('cons', 'left right')
 
 def reader(*args):
     if len(args) == 0:
@@ -70,9 +71,12 @@ def equal(*args):
 
     return True
 
-def make_list(args):
+def make_list(args, separator=None):
     if type(args) is str:
-        args = args.split(' ')
+        if separator:
+            args = args.split(separator)
+        else:
+            args = list(args)
 
     args.reverse()
     tmp = None
@@ -81,21 +85,36 @@ def make_list(args):
 
     return tmp
 
-
-# http://jjinux.blogspot.com/2008/02/scheme-implementing-cons-car-and-cdr.html
-def cons(a, b):
-    def cell(pick):
-        if pick == 1:
-            return a
-        elif pick == 2:
-            return b
-        else:
-            raise ValueError
-
-    return cell
+def cons(left, right):
+    return Cons(left, right)
 
 def car(c):
-    return c(1)
+    if type(c) is Cons:
+        return c.left
+
+    return c[0]
 
 def cdr(c):
-    return c(2)
+    if type(c) is Cons:
+        return c.right
+
+    return c[1]
+
+# a function only version of cons/car/cdr
+# http://jjinux.blogspot.com/2008/02/scheme-implementing-cons-car-and-cdr.html
+#def cons(a, b):
+#    def cell(pick):
+#        if pick == 1:
+#            return a
+#        elif pick == 2:
+#            return b
+#        else:
+#            raise ValueError
+#
+#    return cell
+#
+#def car(c):
+#    return c(1)
+#
+#def cdr(c):
+#    return c(2)

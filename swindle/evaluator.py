@@ -217,7 +217,9 @@ class Evaluator:
         args = self.get_expr_list(tree)
         eargs = self.eval_args(args, env)
         if type(closure) == Plosure:
-            return closure.procedure(*eargs) # this star is very important since Guido is an idiot.
+            # this star is very important since Guido is an idiot.
+            # it's the equivalent of using apply(procedure, args) in Py2
+            return closure.procedure(*eargs)
         elif type(closure) == Closure:
             params = closure.parameters
             body = closure.body

@@ -35,6 +35,6 @@ def rpn:
                 else:
                     #print("else")
                     iter_stack(cons(int(car(r)) c) cdr(r))
-        car(iter_stack(None list(s)))
+        car(iter_stack(None list(s " "))) # cause list to use space a separator
 
 print(rpn(input(args())))
