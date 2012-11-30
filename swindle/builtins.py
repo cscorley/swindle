@@ -104,6 +104,13 @@ def get_item(l, position):
     # normal list stuff is
     return l[position]
 
+def set_item(l, position, item):
+    if type(l) is Cons:
+        raise ValueError("Cannot set_item on a cons")
+
+    l[position] = item
+    return l
+
 def set_car(c, item):
     if type(c) is Cons:
         return Cons(item, cdr(c))

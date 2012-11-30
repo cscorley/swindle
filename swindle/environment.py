@@ -136,6 +136,9 @@ class SetupEnvironment(Environment):
             ('array', Plosure(swndl.make_array)),
             ('set_car', Plosure(swndl.set_car)),
             ('set_cdr', Plosure(swndl.set_cdr)),
+            ('get_item', Plosure(swndl.get_item)),
+            ('set_item', Plosure(swndl.set_item)),
+
 
             # maths
             ('neg', Plosure(swndl.neg)),

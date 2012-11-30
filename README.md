@@ -102,7 +102,7 @@ Built-ins
 * `equal(*items)`
     * Compares items for equality.
 
-### LISP
+### LISP lists and more
 
 * `cons(a b)`
     * Returns a namedtuple Cons with a left and right.
@@ -130,7 +130,7 @@ Built-ins
     * If given an array, will set the second item of that array to item
       (does not modify the rest of the array).
 * `array(*args)`
-    * Create an array (a Python list) out off the arguments.
+    * Create an array (a Python list) out of the arguments.
 * `get_item(l position)`
     * Return the item at position in l.
     * Provides O(1) access on arrays, and O(n) on cons lists.
