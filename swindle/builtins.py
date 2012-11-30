@@ -98,7 +98,7 @@ def cdr(c):
     if type(c) is Cons:
         return c.right
 
-    return c[1]
+    return c[1:]
 
 # a function only version of cons/car/cdr
 # http://jjinux.blogspot.com/2008/02/scheme-implementing-cons-car-and-cdr.html

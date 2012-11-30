@@ -6,3 +6,4 @@ def abs:
             x
 
 print(abs(neg(4)))
+print(args())
