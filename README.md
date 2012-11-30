@@ -51,7 +51,192 @@ implemented for a course on programming languages.
 * an adequate set of operators ✔
 * functions as first-class objects ✔
 * an inheritance system ✗
-* detection of variables used before definition ✓ (partial)
+* detection of variables used before definition ✔
+
+### Feature examples
+#### comments
+
+Comments operate just like Python's `#` comments. There are no block comments.
+
+    print("This is a message!") # This prints a message to console
+
+#### integers and strings
+
+Strings are anything between two double quotes. Integers are just
+integers. You can convert between the two using `str` and `int`
+(see Builtins).
+
+    "Hello"     => "Hello"
+    5           => 5
+    str(5)      => "5"
+    int("5")    => 5
+    
+#### classes/objects
+
+Classes and objects are not yet supported.
+
+#### arrays with O(1) access time
+
+There are two kinds of lists: one made of cons, and arrays.
+
+    array(5 4 3 2 1)    => [5, 4, 3, 2, 1]
+
+There are two ways to access arrays: `get_item` and `set_item` (see Builtins)
+For example, lets assume we have an array named `ar`.
+
+    ar                  => [5, 4, 3, 2, 1]
+    get_item(ar 0)      => 5
+    set_item(ar 0 "5")  => ["5", 4, 3, 2, 1]
+
+#### conditionals
+
+Conditionals are achieved through if/elif/else.
+
+    if (equal(a b c)):
+        print("All items are the same!")
+    elif (equal(a b)):
+        print("a is different than c!")
+    elif (equal(a c)):
+        print("a is different than b!")
+    else:
+        print("b is different than c!")
+
+Note that this structure behaves exactly like Python's if/elif/else.
+
+#### recursion
+
+Before we can talk about recursion, we need to talk about how to
+define variables and functions!
+
+##### variables
+
+To define a variable, we use the `def` keyword.
+
+    def five:
+        5
+    
+    def a_string:
+        "Hey, y'all!"
+        
+Note that this is *not* how Python's variable definition works. In fact,
+it should look a whole lot like Python's function defintion, but it is *not*
+that either.
+
+##### functions
+
+Functions are declared by using `lambda`.
+
+    lambda (x):
+        x
+        
+The lambda above returns a closure that accepts one parameter, `x`, and 
+simply returns x. Note that returning is implicit. To use this closure,
+we could assign it to some variable.
+
+    def print_and_return:
+        lambda (x):
+            print(x)
+            x
+
+
+##### Recursion
+
+Recursion is achieved by calling a function within itself. Here
+is an example of how a recursive factorial could be implemented.
+
+    def fact:
+        lambda (n):
+            if ( gt(n 1)):
+                mul(n fact(sub(n 1)))
+            else:
+                n
+
+    print(fact(3) fact(4) fact(5))
+
+This would indeed print `6 20 120` to console.
+
+#### iteration
+
+Iteration also is achieved through recursion calls. 
+*Swindle does not properly support tail call optimization at the moment*.
+An iterative factorial could be implemented as so:
+
+    def ifact:
+        lambda(n):
+            def iter:
+                lambda (n cur):
+                    if (equal(n 0)):
+                        cur
+                    else:
+                        iter(sub(n 1) mul(n cur))   # the iterative call
+            iter(n 1)
+
+    print(ifact(3) ifact(4) ifact(5))
+    
+Note that functions themselves can have functions declared inside of them,
+and used locally.
+
+#### convenient means to print to the console 
+
+If you haven't figured it out yet, you simply make a call with `print`!
+It's just a call to Python's `print`, so it'll print whatever you give it.
+
+#### an adequate set of operators
+
+See the Builtins section.
+
+#### functions as first-class objects 
+
+Functions can be tossed around just as if they were data.
+For example, `cons`, `car` and `cdr` could be implemented as so:
+
+    def my_cons:
+        lambda (x y):
+            lambda (i):
+                if (equal(i 1)):
+                    x
+                elif (equal(i 2)):
+                    y
+    
+    def my_car:
+        lambda (cell):
+            cell(1)
+            
+    def my_cdr:
+        lambda (cell):
+            cell(2)
+            
+What's going on? Here, `my_cons` is actually returning another closure with one parameter, `i`, 
+that in turn picks which of the two cells, `x` or `y` to return. This closure is the cons 
+cell. When `my_car` or `my_cdr` recieves a cons cell, it asks it to pick the first or second 
+item, respectively.
+
+#### an inheritance system 
+
+No.
+
+#### detection of variables used before definition 
+
+The parser will detect when you use a variable before it's ever defined.
+However, if one of these variables is used in a function call, it will
+not be scoped correctly. Example of what it cannot detect:
+
+    def f:
+        lambda:
+            a()
+            b()
+                    
+    def a:
+        lambda:
+            def b:
+                lambda:
+                    "Haha f() can't find me!"
+                    
+                    
+
+This will pass the parser, but the evaluator will fail because `f` does not have
+access to `b`, which is inside `a`. 
+            
 
 Example program
 ---------------
@@ -67,6 +252,7 @@ Example program
 
 More example programs can be found in `tests/case/` (note that improper
 programs are prepended with 'bad_')
+
 
 Built-ins
 ---------
