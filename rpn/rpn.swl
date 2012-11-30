@@ -3,37 +3,26 @@ def rpn:
         def iter_stack:
             lambda(c r):
                 if (equal (r None)):
-                    #print("done")
                     c
                 elif (equal (car(r) "+")):
-                    #print("add")
-                    iter_stack(cons(add( car(cdr(c)) car(c) ) cdr(cdr(c))) cdr(r))
+                    iter_stack(cons(add(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
                 elif (equal (car(r) "-")):
-                    #print("sub")
-                    iter_stack(cons(sub( car(cdr(c)) car(c) ) cdr(cdr(c))) cdr(r))
+                    iter_stack(cons(sub(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
                 elif (equal (car(r) "*")):
-                    #print("mul")
-                    iter_stack(cons(mul( car(cdr(c)) car(c) ) cdr(cdr(c))) cdr(r))
+                    iter_stack(cons(mul(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
                 elif (equal (car(r) "/")):
-                    #print("div")
-                    iter_stack(cons(div( car(cdr(c)) car(c) ) cdr(cdr(c))) cdr(r))
+                    iter_stack(cons(div(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
                 elif (equal (car(r) "^")):
-                    #print("div")
-                    iter_stack(cons(pow( car(cdr(c)) car(c) ) cdr(cdr(c))) cdr(r))
+                    iter_stack(cons(pow(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
                 elif (equal (car(r) "cos")):
-                    #print("cos")
                     iter_stack(cons(cos(car(c)) cdr(c)) cdr(r))
                 elif (equal (car(r) "sin")):
-                    #print("sin")
                     iter_stack(cons(sin(car(c)) cdr(c)) cdr(r))
                 elif (equal (car(r) "tan")):
-                    #print("tan")
                     iter_stack(cons(tan(car(c)) cdr(c)) cdr(r))
                 elif (equal (car(r) "log")):
-                    #print("tan")
                     iter_stack(cons(log(car(c)) cdr(c)) cdr(r))
                 else:
-                    #print("else")
                     iter_stack(cons(int(car(r)) c) cdr(r))
         car(iter_stack(None list(s " "))) # cause list to use space a separator
 
