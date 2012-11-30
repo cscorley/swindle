@@ -266,7 +266,9 @@ class Parser:
             return self.tuple(env)
         else:
             # for symbols?
-            return self.match(Types.variable)
+            t = self.match(Types.variable)
+            t.val_type = Types.symbol
+            return t
 
     def tuple(self, env):
         tree = self.match(Types.obracket)

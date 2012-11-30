@@ -133,6 +133,7 @@ class SetupEnvironment(Environment):
             ('car', Plosure(swndl.car)),
             ('cdr', Plosure(swndl.cdr)),
             ('list', Plosure(swndl.make_list)),
+            ('array', Plosure(swndl.make_array)),
             ('set_car', Plosure(swndl.set_car)),
             ('set_cdr', Plosure(swndl.set_cdr)),
 

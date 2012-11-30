@@ -172,7 +172,7 @@ class ParserTestSuite(unittest.TestCase):
         assert def_body.left.right
 
         assert def_body.left.left.val_type == Types.quote
-        assert def_body.left.left.right.val_type == Types.variable
+        assert def_body.left.left.right.val_type == Types.symbol
         assert def_body.left.left.right.val == "symbol"
         assert def_body.left.left.left is None
         assert def_body.left.right.val_type == Types.newline

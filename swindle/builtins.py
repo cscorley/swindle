@@ -85,6 +85,13 @@ def make_list(args, separator=None):
 
     return tmp
 
+def make_array(*args):
+    tmp = list()
+    for arg in args:
+        tmp.append(arg)
+
+    return tmp
+
 
 def get_item(l, position):
     # cons are not O(1)

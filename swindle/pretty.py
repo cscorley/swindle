@@ -81,6 +81,8 @@ def make_pretty(tree, depth=0):
         pstr += str(tree.val)
     elif t == Types.string:
         pstr += str(tree.val)
+    elif t == Types.symbol:
+        pstr += str(tree.val)
     elif t == Types.variable:
         pstr += str(tree.val)
 

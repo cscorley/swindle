@@ -82,7 +82,7 @@ class PrettyTestSuite(unittest.TestCase):
             tree = p.program()
             pstr = pretty.make_pretty(tree)
 
-            cstr = 'def a_tuple:\n    ["Item1" 2 ["Nested" "Tuples"] 3 4]\nprint(a_tuple)\n'
+            cstr = 'def a_tuple:\n    `["Item1" 2 ["Nested" "Tuples"] 3 4]\nprint(a_tuple)\n'
             print(pstr)
             print(cstr)
             assert pstr == cstr

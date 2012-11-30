@@ -24,7 +24,7 @@ Types = Enum([
     'colon', 'oparen', 'cparen',
     'obracket', 'cbracket', 'quote',
     'newline',
-    'integer', 'string', 'variable',
+    'integer', 'string', 'variable', 'symbol',
     'form', 'form_list', 'parameter_list', 'expr_list', 'datum_list',
     'UNKNOWN', 'JOIN'])
 

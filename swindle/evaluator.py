@@ -100,6 +100,8 @@ class Evaluator:
             return int(tree.val)
         elif t == Types.string:
             return str(tree.val)[1:-1]
+        elif t == Types.symbol:
+            return str(tree.val)
         elif t == Types.variable:
             # proc_call
             if tree.left and tree.left.val_type == Types.oparen:
