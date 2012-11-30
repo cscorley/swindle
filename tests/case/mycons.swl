@@ -1,0 +1,22 @@
+def my_cons:
+    lambda (x y):
+        lambda (i):
+            if (equal(i 1)):
+                x
+            elif (equal(i 2)):
+                y
+
+def my_car:
+    lambda (cell):
+        cell(1)
+
+def my_cdr:
+    lambda (cell):
+        cell(2)
+
+
+def some:
+    my_cons(5 my_cons("Stuff" "Item"))
+
+print(my_car(some))
+print(my_car(my_cdr(some)))
