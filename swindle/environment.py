@@ -126,10 +126,17 @@ class SetupEnvironment(Environment):
             ('int', Plosure(int)),
             ('print', Plosure(print)),
             ('input', Plosure(swndl.reader)),
-
-            # uh?
             ('args', Plosure(self.argv_swndl)),
 
+            # lisp
+            ('cons', Plosure(swndl.cons)),
+            ('car', Plosure(swndl.car)),
+            ('cdr', Plosure(swndl.cdr)),
+            ('list', Plosure(swndl.make_list)),
+            ('set_car', Plosure(swndl.set_car)),
+            ('set_cdr', Plosure(swndl.set_cdr)),
+
+            # maths
             ('neg', Plosure(swndl.neg)),
             ('equal', Plosure(swndl.equal)),
             ('lt', Plosure(swndl.lt)),
@@ -138,12 +145,7 @@ class SetupEnvironment(Environment):
             ('sub', Plosure(swndl.sub)),
             ('mul', Plosure(swndl.mul)),
             ('div', Plosure(swndl.div)),
-            ('cons', Plosure(swndl.cons)),
-            ('car', Plosure(swndl.car)),
-            ('cdr', Plosure(swndl.cdr)),
-            ('list', Plosure(swndl.make_list)),
 
-            # maths
             ('cos', Plosure(math.cos)),
             ('sin', Plosure(math.sin)),
             ('log', Plosure(math.log)),

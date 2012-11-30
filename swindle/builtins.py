@@ -85,6 +85,33 @@ def make_list(args, separator=None):
 
     return tmp
 
+
+def get_item(l, position):
+    # cons are not O(1)
+    if type(l) is Cons:
+        item = l
+        while position > 0:
+            item = cdr(item)
+        return item
+
+    # normal list stuff is
+    return l[position]
+
+def set_car(c, item):
+    if type(c) is Cons:
+        return Cons(item, cdr(c))
+    else:
+        c[0] = item
+        return c
+
+def set_cdr(c, item):
+    if type(c) is Cons:
+        return Cons(car(c), item)
+    else:
+        c[1] = item
+        return c
+
+
 def cons(left, right):
     return Cons(left, right)
 
