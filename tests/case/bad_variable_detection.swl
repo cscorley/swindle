@@ -1,0 +1,12 @@
+def f:
+    lambda:
+        a()
+        b()
+
+def a:
+    lambda:
+        def b:
+            lambda:
+                "Haha f() can't find me!"
+
+print(f())
