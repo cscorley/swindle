@@ -17,7 +17,6 @@ def make_pretty(tree, depth=0):
     t = tree.val_type
     pstr = " " * cur_indent
     assert len(pstr) % 4 == 0
-    #print( depth, cur_indent,len(pstr), "'%s'" % pstr)
     if t == Types.kw_def:
         pstr += "def "
         pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
@@ -43,9 +42,6 @@ def make_pretty(tree, depth=0):
         pstr += make_pretty(tree.left, depth+1) + make_pretty(tree.right, depth+1)
     elif t == Types.form_list:
         pstr = make_pretty(tree.left, depth)
-
-        #if depth == 0:
-        #    pstr += '\n'
 
         if tree.right:
             pstr += make_pretty(tree.right, depth)
@@ -98,7 +94,7 @@ def make_pretty(tree, depth=0):
     else:
         raise Exception("Can't make this ugly thing pretty.")
 
-    return pstr#.rstrip(" ")
+    return pstr
 
 
 def pretty_file(source, destination=sys.stdout):

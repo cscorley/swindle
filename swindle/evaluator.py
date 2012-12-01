@@ -33,13 +33,6 @@ def eval_file(source, argv=sys.argv, destination=sys.stdout):
 
     return True
 
-false = False
-def is_true(obj):
-    return not is_false(obj)
-
-def is_false(obj):
-    return obj == false
-
 
 class EvalError(Exception):
      def __init__(self, value, tree):
@@ -80,7 +73,6 @@ class Evaluator:
         elif t == Types.kw_else:
             return self.eval_else(tree, env)
         elif t == Types.colon:
-            #raise Exception("Eval COLON")
             return self.eval(tree.right, env)
         elif t == Types.form_list:
             return self.eval_form_list(tree, env)
@@ -88,14 +80,12 @@ class Evaluator:
             # if oparen, then we're in a param list
             # (conditionals don't pick up oparens)
             pass
-            #raise Exception("Eval OPAREN")
         elif t == Types.obracket:
             return self.eval_tuple(tree, env)
         elif t == Types.quote:
             return self.eval_quote(tree, env)
         elif t == Types.newline:
             pass
-            #raise Exception("Eval NEWLINE")
         elif t == Types.integer:
             return int(tree.val)
         elif t == Types.string:
@@ -110,11 +100,6 @@ class Evaluator:
             return self.eval_variable(tree, env)
         elif t == Types.form:
             return self.eval(tree.left, env)
-        elif t == Types.JOIN:
-            # pstr = make_pretty(self, tree.left, depth) + make_pretty(self, tree.right, depth)
-#            return self.eval(tree.left, env)
-            self.eval(tree.right, env)
-            raise Exception("Eval JOIN")
         else:
             raise Exception("Bad expression!")
 
@@ -144,7 +129,7 @@ class Evaluator:
         env.env_update(var, val)
 
     def eval_if(self, tree, env):
-        if is_true(self.eval(tree.left, env)):
+        if self.eval(tree.left, env):
             return self.eval(tree.right.left, env)
         else:
             return self.eval(tree.right.right, env)

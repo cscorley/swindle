@@ -1,4 +1,4 @@
-# scanner.py
+# parser.py
 #
 # author: Christopher S. Corley
 
@@ -143,12 +143,10 @@ class Parser:
 
     def newlinePending(self):
         val = self.newline(self.curr_token.col_no)
-        #print("NLP "+str(val)+" "+str(self.newline_seen))
         return val
 
     def formPending(self):
         val = (self.exprPending() or self.defnPending())
-        #print("FORM %s %s" % (str(val), str(self.curr_token)))
         return val
 
     def program(self):
@@ -182,11 +180,9 @@ class Parser:
     def form(self, env):
         if self.defnPending():
             formtree = self.defn(env)
-        #elif self.exprPending():
         else:
             formtree = self.expr(env)
 
-        #print("FORMEND"+" "+str(self.newline_seen))
         nl = None
         if not self.newline_seen:
             nl = self.match(Types.newline)
@@ -211,7 +207,6 @@ class Parser:
             env.env_lookup(var.val)
         except EnvironmentLookupError as e:
             self.delays.add(var.val)
-            #raise ParseError(str(e))
         return var
 
     def variable_decl(self, env):
