@@ -1,0 +1,9 @@
+def print_and_return:
+    lambda (x):
+        print(x)
+        x
+
+def hello:
+    print_and_return("Hello, world!")
+
+print(hello)
