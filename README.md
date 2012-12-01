@@ -325,6 +325,12 @@ Built-ins
     * Provides O(1) access on arrays, does not operate on cons lists.
 
 ### Math
+* `and(*args)`
+    * Returns logical and on all arguments
+* `or(*args)`
+    * Returns logical or on all arguments
+* `not(x)`
+    * Returns logical not on x.
 * `neg(x)`
     * Negates the number
 * `lt(a b)`

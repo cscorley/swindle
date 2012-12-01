@@ -26,6 +26,28 @@ def lt(a, b):
 def gt(a, b):
     return a > b
 
+def and(*args):
+    tmp = True
+    for arg in args:
+        if tmp:
+            tmp = (tmp and arg)
+        else:
+            return False
+    return tmp 
+
+def or(*args):
+    tmp = False
+    for arg in args:
+        if tmp:
+            return True
+        else:
+            tmp = (tmp or arg)
+
+    return tmp
+
+def not(x):
+    return not x
+
 def sub(*args):
     tmp = None
     for arg in args:
