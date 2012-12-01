@@ -131,15 +131,18 @@ Functions are declared by using `lambda`.
     lambda (x):
         x
         
-The lambda above returns a closure that accepts one parameter, `x`, and 
-simply returns x. Note that returning is implicit. To use this closure,
+The lambda above returns a closure that accepts one parameter, `x`, and
+simply implicitly returns x. Note that returning is implicit. To use a closure,
 we could assign it to some variable.
 
     def print_and_return:
         lambda (x):
             print(x)
             x
+            
+    print_and_return("Hi!")
 
+Note that function calls are achieved using the familiar Python syntax.
 
 ##### Recursion
 
