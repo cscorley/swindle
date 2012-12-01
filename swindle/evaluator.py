@@ -26,7 +26,7 @@ def eval_file(source, argv=sys.argv, destination=sys.stdout):
             e.eval(tree, e.global_env.env_extend())
 
 
-    except IOError as e:
+    except Exception as e:
         destination.write(str(e))
         destination.write('\n')
         return False
