@@ -73,7 +73,7 @@ integers. You can convert between the two using `str` and `int`
     
 #### classes/objects
 
-Classes and objects are not yet supported.
+Objects are not supported.
 
 #### arrays with O(1) access time
 
