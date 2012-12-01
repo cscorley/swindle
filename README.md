@@ -64,7 +64,7 @@ Comments operate just like Python's `#` comments. There are no block comments.
 
 Strings are anything between two double quotes. Integers are just
 integers. You can convert between the two using `str` and `int`
-(see [Builtins](#Built-ins)).
+(see [Built-ins](#built-ins)).
 
     "Hello"     => "Hello"
     5           => 5
@@ -81,7 +81,7 @@ There are two kinds of lists: one made of cons, and arrays.
 
     array(5 4 3 2 1)    => [5, 4, 3, 2, 1]
 
-There are two ways to access arrays: `get_item` and `set_item` (see [Builtins](#Built-ins))
+There are two ways to access arrays: `get_item` and `set_item` (see [Built-ins](#built-ins))
 For example, lets assume we have an array named `ar`.
 
     ar                  => [5, 4, 3, 2, 1]
@@ -183,7 +183,7 @@ It's just a call to Python's `print`, so it'll print whatever you give it.
 
 #### an adequate set of operators
 
-See the [Builtins](#Built-ins) section.
+See the [Built-ins](#built-ins) section.
 
 #### functions as first-class objects 
 
