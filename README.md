@@ -73,7 +73,9 @@ integers. You can convert between the two using `str` and `int`
     
 #### classes/objects
 
-Objects are not supported.
+Objects are not supported. Because of how the grammar was designed,
+and how function calls are achieved, there is no clean way to do
+function dispatching (yet).
 
 #### arrays with O(1) access time
 
