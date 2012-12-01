@@ -149,9 +149,9 @@ class SetupEnvironment(Environment):
             ('sub', Plosure(swndl.sub)),
             ('mul', Plosure(swndl.mul)),
             ('div', Plosure(swndl.div)),
-            ('and', Plosure(swndl.and)),
-            ('or', Plosure(swndl.or)),
-            ('not', Plosure(swndl.not)),
+            ('and', Plosure(swndl.and_op)),
+            ('or', Plosure(swndl.or_op)),
+            ('not', Plosure(swndl.not_op)),
 
             ('cos', Plosure(math.cos)),
             ('sin', Plosure(math.sin)),

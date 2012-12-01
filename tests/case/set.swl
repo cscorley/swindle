@@ -1,0 +1,23 @@
+
+def count_five:
+    lambda(x):
+        def increment:
+            lambda:
+                set! x:
+                    add(x 1)
+        print(x)
+        increment()
+        print(x)
+        increment()
+        print(x)
+        increment()
+        print(x)
+        increment()
+        print(x)
+
+
+
+count_five(1)
+
+count_five(neg(10))
+

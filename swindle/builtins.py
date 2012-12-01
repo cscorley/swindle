@@ -26,7 +26,7 @@ def lt(a, b):
 def gt(a, b):
     return a > b
 
-def and(*args):
+def and_op(*args):
     tmp = True
     for arg in args:
         if tmp:
@@ -35,7 +35,7 @@ def and(*args):
             return False
     return tmp 
 
-def or(*args):
+def or_op(*args):
     tmp = False
     for arg in args:
         if tmp:
@@ -45,7 +45,7 @@ def or(*args):
 
     return tmp
 
-def not(x):
+def not_op(x):
     return not x
 
 def sub(*args):
