@@ -6,7 +6,7 @@ throws away parentheses in favor of Python-style colon and indentation
 on special forms. I might be burned at the stake for this.
 
 Requirements
-============
+------------
 
 `swindle` runs on Python 3.2 or above. Support for lower Python 3.x
 versions has been hacked in, so use at your own risk there.
@@ -19,7 +19,7 @@ You can install these requirements by running `make install`, which
 requires `pip`.
 
 Running
-=======
+-------
 
 At the moment, you can run swindle by executing `bin/swndl`, or `make
 run`. `make run` will also execute `bin/swndl` on all files in
