@@ -1,0 +1,10 @@
+def ar:
+    array(5 4 3 2 1)
+
+
+print(ar)
+print(get_item(ar 0))
+
+set_item(ar 0 "5")
+
+print(ar)
