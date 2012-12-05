@@ -1,4 +1,3 @@
-
 # recusive factorial
 def fact:
     lambda n:

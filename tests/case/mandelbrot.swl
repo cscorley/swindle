@@ -15,4 +15,3 @@ def mandelbrot_iter:
                     else:
                         helper( sub(iter_left 1) add(sub(square(r) square(s)) x) add(mul(2 r s) y))
             helper(iterations 0 0)
-

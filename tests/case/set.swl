@@ -1,4 +1,3 @@
-
 def count_five:
     lambda x:
         def increment:
@@ -20,4 +19,3 @@ def count_five:
 count_five(1)
 
 count_five(neg(10))
-

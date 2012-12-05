@@ -51,4 +51,3 @@ my_set_cdr(some my_cons("Tacos" "Please?"))
 
 print(my_car(some))
 print(my_car(my_cdr(some)))
-
