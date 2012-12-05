@@ -198,7 +198,11 @@ class Parser:
 
     def variable_use(self, env):
         var = self.match(Types.variable)
-        env.env_lookup(var.val)
+
+        # do not look up self when parsing. it'll be inserted later.
+        if var.val != "self":
+            env.env_lookup(var.val)
+
         return var
 
     def variable_call(self, env):
@@ -225,6 +229,8 @@ class Parser:
     def expr(self, env):
         if self.proc_callPending():
             return self.proc_call(env)
+        if self.dot_callPending():
+            return self.dot_call(env)
         elif self.if_exprPending():
             return self.if_expr(env)
         elif self.lambda_exprPending():
@@ -330,6 +336,19 @@ class Parser:
 
         return tree
 
+    def dot_call(self, env):
+        tree = self.variable_call(env)
+        tree.left = self.match(Types.dot)
+
+        calltree = self.match(Types.variable) # message
+        calltree.left = self.match(Types.oparen)
+        calltree.right = self.opt_expr_list(env)
+        self.match(Types.cparen)
+
+        tree.right = calltree
+
+        return tree
+
     def opt_expr_list(self, env):
         tree = None
         if self.exprPending():
@@ -361,7 +380,8 @@ class Parser:
                 self.if_exprPending() or
                 self.lambda_exprPending() or
                 self.set_exprPending() or
-                self.proc_callPending())
+                self.proc_callPending() or
+                self.dot_callPending())
 
     def literalPending(self):
         return (
@@ -397,6 +417,10 @@ class Parser:
     def proc_callPending(self):
         # cant use expr here without some sort of recursion :(
         return (self.check(Types.variable) and self.check(Types.oparen, peek=True))
+
+    def dot_callPending(self):
+        # cant use expr here without some sort of recursion :(
+        return (self.check(Types.variable) and self.check(Types.dot, peek=True))
 
     def integerPending(self):
         return self.check(Types.integer)

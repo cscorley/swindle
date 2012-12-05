@@ -93,6 +93,9 @@ class Evaluator:
             if tree.left and tree.left.val_type == Types.oparen:
                 return self.eval_proc_call(tree, env)
 
+            if tree.left and tree.left.val_type == Types.dot:
+                return self.eval_dot_call(tree, env)
+
             return self.eval_variable(tree, env)
         elif t == Types.form:
             return self.eval(tree.left, env)
@@ -221,4 +224,6 @@ class Evaluator:
 
             return self.eval(body,xenv);
 
-
+    def eval_dot_call(self, tree, env):
+        obj = env.env_lookup(tree.val)
+        return self.eval(tree.right, obj)

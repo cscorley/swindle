@@ -1,0 +1,45 @@
+def Animal:
+    lambda greeting:
+        def speak:
+            lambda:
+                print(greeting)
+
+        self
+
+def Dog:
+    lambda:
+        def parent:
+            Animal("WooF!")
+
+        self
+
+def Cat:
+    lambda:
+        def parent:
+            Animal("Meow!")
+
+        self
+
+def Fish:
+    lambda:
+        def parent:
+            Animal("Blub blub blub")
+
+        def speak:
+            lambda:
+                print("ERROR -- Fish can't speak!")
+
+        self
+
+def ralph:
+    Dog()
+
+def lulu:
+    Cat()
+
+def frankie:
+    Fish()
+
+ralph.speak()
+lulu.speak()
+frankie.speak()

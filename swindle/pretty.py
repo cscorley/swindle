@@ -21,7 +21,7 @@ def make_pretty(tree, depth=0):
         pstr += "def "
         pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
     elif t == Types.kw_lambda:
-        pstr += "lambda "
+        pstr += "lambda"
         pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
     elif t == Types.kw_set:
         pstr += "set! "
@@ -47,9 +47,9 @@ def make_pretty(tree, depth=0):
             pstr += make_pretty(tree.right, depth)
 
     elif t == Types.parameter_list:
-        pstr = make_pretty(tree.left, depth=0)
+        pstr = " " + make_pretty(tree.left, depth=0)
         if tree.right:
-            pstr += " " + make_pretty(tree.right, depth=0)
+            pstr += make_pretty(tree.right, depth=0)
     elif t == Types.expr_list:
         pstr = make_pretty(tree.left, depth=0)
         if tree.right:
@@ -87,6 +87,9 @@ def make_pretty(tree, depth=0):
             pstr += "("
             pstr += make_pretty(tree.right, depth=0)
             pstr += ")"
+        if tree.left and tree.left.val_type == Types.dot:
+            pstr += "."
+            pstr += make_pretty(tree.right, depth=0)
     elif t == Types.form:
         pstr = make_pretty(tree.left, depth) + make_pretty(tree.right, depth)
     elif t == Types.JOIN:

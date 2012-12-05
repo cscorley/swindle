@@ -124,6 +124,7 @@ class Lexer:
                 or c == ')'
                 or c == ':'
                 or c == '`'
+                or c == '.'
                 or c == '['
                 or c == ']'):
                 self.need_terminator = True
