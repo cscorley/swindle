@@ -77,7 +77,7 @@ class ParserTestSuite(unittest.TestCase):
 
 
     def test_parse_tree_def_lambda(self):
-        s = StringIO("def identity:\n    lambda(x):\n      x\n")
+        s = StringIO("def identity:\n    lambda x:\n      x\n")
         l = lexer.Lexer(s)
         p = parser.Parser(l)
         tree = p.program()
@@ -115,11 +115,10 @@ class ParserTestSuite(unittest.TestCase):
         lambda_tree = def_body.left.left
         assert lambda_tree.left
         assert lambda_tree.right
-        assert lambda_tree.left.val_type == Types.oparen
-        assert lambda_tree.left.right.val_type == Types.parameter_list
-        assert lambda_tree.left.right.left.val_type == Types.variable
-        assert lambda_tree.left.right.left.val == "x"
-        assert lambda_tree.left.right.right is None
+        assert lambda_tree.left.val_type == Types.parameter_list
+        assert lambda_tree.left.left.val_type == Types.variable
+        assert lambda_tree.left.left.val == "x"
+        assert lambda_tree.left.right is None
 
         assert lambda_tree.right.val_type == Types.colon
         assert lambda_tree.right.left.val_type == Types.newline

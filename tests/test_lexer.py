@@ -124,14 +124,8 @@ abs(-4)
             assert lexeme.val == "lambda"
 
             lexeme = l.lex()
-            assert lexeme.val_type is Types.oparen
-
-            lexeme = l.lex()
             assert lexeme.val == "x"
             assert lexeme.val_type is Types.variable
-
-            lexeme = l.lex()
-            assert lexeme.val_type is Types.cparen
 
             lexeme = l.lex()
             assert lexeme.val == ":"
@@ -141,9 +135,6 @@ abs(-4)
 
             lexeme = l.lex()
             assert lexeme.val == "if"
-
-            lexeme = l.lex()
-            assert lexeme.val == "("
 
             lexeme = l.lex()
             assert lexeme.val == "lt"
@@ -159,9 +150,6 @@ abs(-4)
             lexeme = l.lex()
             assert lexeme.val == "0"
             assert lexeme.val_type is Types.integer
-
-            lexeme = l.lex()
-            assert lexeme.val == ")"
 
             lexeme = l.lex()
             assert lexeme.val == ")"

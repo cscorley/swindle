@@ -55,13 +55,13 @@ class PrettyTestSuite(unittest.TestCase):
         assert pstr == "def var:\n    5\n"
 
     def test_pretty_def_lambda(self):
-        s = StringIO("def identity:\n lambda(x):\n              x\n")
+        s = StringIO("def identity:\n lambda x:\n              x\n")
         l = lexer.Lexer(s)
         p = parser.Parser(l)
         tree = p.program()
         pstr = pretty.make_pretty(tree)
 
-        assert pstr == "def identity:\n    lambda (x):\n        x\n"
+        assert pstr == "def identity:\n    lambda x:\n        x\n"
 
     def test_pretty_case_mandelbrot(self):
         with open("tests/case/mandelbrot.swl") as s:
@@ -70,7 +70,7 @@ class PrettyTestSuite(unittest.TestCase):
             tree = p.program()
             pstr = pretty.make_pretty(tree)
 
-            cstr = "def square:\n    lambda (x):\n        mul(x x)\ndef mandelbrot_iter:\n    lambda (iterations):\n        lambda (x y):\n            def helper:\n                lambda (iter_left r s):\n                    if (equal(iter_left 0)):\n                        0\n                    elif (gt(sqrt(add(square(r) square(s))) 2)):\n                        sub(iterations iter_left)\n                    else:\n                        helper(sub(iter_left 1) add(sub(square(r) square(s)) x) add(mul(2 r s) y))\n            helper(iterations 0 0)\n"
+            cstr = "def square:\n    lambda x:\n        mul(x x)\ndef mandelbrot_iter:\n    lambda iterations:\n        lambda x y:\n            def helper:\n                lambda iter_left r s:\n                    if equal(iter_left 0):\n                        0\n                    elif gt(sqrt(add(square(r) square(s))) 2):\n                        sub(iterations iter_left)\n                    else:\n                        helper(sub(iter_left 1) add(sub(square(r) square(s)) x) add(mul(2 r s) y))\n            helper(iterations 0 0)\n"
             print(pstr)
             print(cstr)
             assert pstr == cstr

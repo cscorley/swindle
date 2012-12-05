@@ -27,13 +27,13 @@ def make_pretty(tree, depth=0):
         pstr += "set! "
         pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)
     elif t == Types.kw_if:
-        pstr += "if ("
+        pstr += "if "
         pstr += make_pretty(tree.left, depth=0)
-        pstr += ")" + make_pretty(tree.right, depth)
+        pstr += make_pretty(tree.right, depth)
     elif t == Types.kw_elif:
-        pstr += "elif ("
+        pstr += "elif "
         pstr += make_pretty(tree.left, depth=0)
-        pstr += ")" + make_pretty(tree.right, depth)
+        pstr += make_pretty(tree.right, depth)
     elif t == Types.kw_else:
         pstr += "else"
         pstr += make_pretty(tree.left, depth=0) + make_pretty(tree.right, depth)

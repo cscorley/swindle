@@ -1,4 +1,4 @@
-all: compile run
+all: compile test
 
 compile:
 	echo "Nothing to do here."
