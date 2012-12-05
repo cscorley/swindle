@@ -5,6 +5,15 @@ def ar:
 print(ar)
 print(get_item(ar 0))
 
-set_item(ar 0 "5")
+set_item(ar 0 "Five")
+print(ar)
 
+set_item(ar 3 array("s" "i" "c" "p"))
+print(ar)
+
+def l:
+    lambda:
+        print("Tacos")
+
+set_item(ar 2 l)
 print(ar)

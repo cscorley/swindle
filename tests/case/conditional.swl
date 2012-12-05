@@ -1,0 +1,20 @@
+
+
+def val:
+    4
+
+def iter:
+    lambda (x):
+        if (equal(val x)):
+            print("Found the number" val "!")
+        elif (gt(x val)):
+            print("Need less!")
+            iter(sub(x 1))
+        else:
+            print("Need more!")
+            iter(add(x 1))
+
+print("Starting at 0")
+iter(0)
+print("Starting at 6")
+iter(6)
