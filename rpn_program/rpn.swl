@@ -1,26 +1,26 @@
 def rpn:
-    lambda (s):
+    lambda s:
         def iter_stack:
-            lambda(c r):
-                if (equal (r None)):
+            lambda c r:
+                if equal (r None):
                     c
-                elif (equal (car(r) "+")):
+                elif equal (car(r) "+"):
                     iter_stack(cons(add(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
-                elif (equal (car(r) "-")):
+                elif equal (car(r) "-"):
                     iter_stack(cons(sub(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
-                elif (equal (car(r) "*")):
+                elif equal (car(r) "*"):
                     iter_stack(cons(mul(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
-                elif (equal (car(r) "/")):
+                elif equal (car(r) "/"):
                     iter_stack(cons(div(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
-                elif (equal (car(r) "^")):
+                elif equal (car(r) "^"):
                     iter_stack(cons(pow(car(cdr(c)) car(c)) cdr(cdr(c))) cdr(r))
-                elif (equal (car(r) "cos")):
+                elif equal (car(r) "cos"):
                     iter_stack(cons(cos(car(c)) cdr(c)) cdr(r))
-                elif (equal (car(r) "sin")):
+                elif equal (car(r) "sin"):
                     iter_stack(cons(sin(car(c)) cdr(c)) cdr(r))
-                elif (equal (car(r) "tan")):
+                elif equal (car(r) "tan"):
                     iter_stack(cons(tan(car(c)) cdr(c)) cdr(r))
-                elif (equal (car(r) "log")):
+                elif equal (car(r) "log"):
                     iter_stack(cons(log(car(c)) cdr(c)) cdr(r))
                 else:
                     iter_stack(cons(int(car(r)) c) cdr(r))

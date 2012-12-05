@@ -76,10 +76,6 @@ class Evaluator:
             return self.eval(tree.right, env)
         elif t == Types.form_list:
             return self.eval_form_list(tree, env)
-        elif t == Types.oparen:
-            # if oparen, then we're in a param list
-            # (conditionals don't pick up oparens)
-            pass
         elif t == Types.obracket:
             return self.eval_tuple(tree, env)
         elif t == Types.quote:
@@ -115,8 +111,7 @@ class Evaluator:
         p = list()
         # sometimes the tree can be empty
         if tree:
-            t = tree.right
-
+            t = tree
             while t:
                 p.append(t.left.val)
                 t = t.right

@@ -1,17 +1,17 @@
 def my_cons:
-    lambda (x y):
-        lambda (i):
-            if (equal(i 1)):
+    lambda x y:
+        lambda i:
+            if equal(i 1):
                 x
-            elif (equal(i 2)):
+            elif equal(i 2):
                 y
 
 def my_car:
-    lambda (cell):
+    lambda cell:
         cell(1)
 
 def my_cdr:
-    lambda (cell):
+    lambda cell:
         cell(2)
 
 

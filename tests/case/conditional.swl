@@ -4,10 +4,10 @@ def val:
     4
 
 def iter:
-    lambda (x):
-        if (equal(val x)):
+    lambda x:
+        if equal(val x):
             print("Found the number" val "!")
-        elif (gt(x val)):
+        elif gt(x val):
             print("Need less!")
             iter(sub(x 1))
         else:

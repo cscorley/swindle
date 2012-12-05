@@ -1,6 +1,6 @@
 def abs:
-    lambda (x):
-        if ( lt(x 0) ):
+    lambda x:
+        if lt(x 0):
             neg(x)
         else:
             x

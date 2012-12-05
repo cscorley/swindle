@@ -1,5 +1,5 @@
 def print_and_return:
-    lambda (x):
+    lambda x:
         print(x)
         x
 

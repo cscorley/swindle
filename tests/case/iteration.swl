@@ -1,10 +1,10 @@
 
 # iterative factorial
 def fact:
-    lambda(n):
+    lambda n:
         def iter:
-            lambda (n cur):
-                if (equal(n 0)):
+            lambda n cur:
+                if equal(n 0):
                     cur
                 else:
                     iter(sub(n 1) mul(n cur))

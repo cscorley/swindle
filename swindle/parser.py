@@ -281,9 +281,7 @@ class Parser:
 
     def if_expr(self, env):
         tree = self.match(Types.kw_if)
-        self.match(Types.oparen)
         tree.left = self.expr(env)
-        self.match(Types.cparen)
         tree.right = self.join(self.form_block(env), self.opt_elifs(env))
 
         return tree
@@ -293,9 +291,7 @@ class Parser:
         tree = None
         if self.elifPending():
             tree = self.match(Types.kw_elif)
-            self.match(Types.oparen)
             tree.left = self.expr(env)
-            self.match(Types.cparen)
             tree.right = self.join(self.form_block(env), self.opt_elifs(env))
         else:
             tree = self.opt_else(env)
@@ -342,9 +338,7 @@ class Parser:
         return tree
 
     def parameter_list(self, env):
-        tree = self.match(Types.oparen)
-        tree.right = self.join(self.variable_decl(env), self.opt_parameter_list(env), token_type=Types.parameter_list)
-        self.match(Types.cparen)
+        tree = self.join(self.variable_decl(env), self.opt_parameter_list(env), token_type=Types.parameter_list)
 
         return tree
 
@@ -356,7 +350,7 @@ class Parser:
         return tree
 
     def parametersPending(self):
-        return self.check(Types.oparen)
+        return self.check(Types.variable)
 
     def defnPending(self):
         return self.check(Types.kw_def)

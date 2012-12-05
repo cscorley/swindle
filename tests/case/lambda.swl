@@ -1,6 +1,6 @@
 
 def tester:
-    lambda (x y):
+    lambda x y:
         lambda:
             print(x)
         lambda:
