@@ -3,7 +3,7 @@
 #
 # author: Christopher S. Corley
 
-for each in `ls rpn/*.txt`; do
+for each in `ls rpn_program/*.txt`; do
     echo ""
     echo "--------------------"
     echo $each " contents:"
@@ -12,5 +12,5 @@ for each in `ls rpn/*.txt`; do
     echo "--------------------"
     echo "RPN results:"
     echo "--------------------"
-    bin/swndl rpn/rpn.swl $each
+    bin/swndl rpn_program/rpn.swl $each
 done

@@ -6,7 +6,7 @@ compile:
 test:
 	nosetests tests
 
-run: array object conditional recursion iteration extension reify variation rpn_test
+run: array object conditional recursion iteration extension reify variation rpn
 
 array:
 	sh bin/test.sh tests/case/array.swl
@@ -32,9 +32,13 @@ reify:
 variation:
 	sh bin/test.sh tests/case/variation.swl
 
-rpn_test:
+rpn:
 	echo "RPN TESTING"
 	sh bin/rpn.sh
+	echo "stdin test"
+	echo "5 5 + 25 - 0 1 - * 5 ^" | bin/swndl rpn_program/rpn.swl
+	echo "0 2 -" | bin/swndl rpn_program/rpn.swl
+
 
 swndl:
 	sh bin/run.sh bin/swndl

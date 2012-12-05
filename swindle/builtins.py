@@ -51,7 +51,7 @@ def not_op(x):
 def sub(*args):
     tmp = None
     for arg in args:
-        if tmp:
+        if tmp is not None:
             tmp = tmp - arg
         else:
             tmp = arg
@@ -60,7 +60,7 @@ def sub(*args):
 def add(*args):
     tmp = None
     for arg in args:
-        if tmp:
+        if tmp is not None:
             tmp = tmp + arg
         else:
             tmp = arg
@@ -75,7 +75,7 @@ def mul(*args):
 def div(*args):
     tmp = None
     for arg in args:
-        if tmp:
+        if tmp is not None:
             tmp = tmp / arg
         else:
             tmp = arg
@@ -85,7 +85,7 @@ def equal(*args):
     tmp = None
     result = True
     for arg in args:
-        if tmp:
+        if tmp is not None:
             if not (tmp == arg):
                 return False
         else:
