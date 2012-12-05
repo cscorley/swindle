@@ -1,4 +1,4 @@
-all: compile test
+all: compile run
 
 compile:
 	echo "Nothing to do here."
@@ -6,7 +6,31 @@ compile:
 test:
 	nosetests tests
 
-run: swndl 
+run: array object conditional recursion iteration extension reify variation
+
+array:
+	sh bin/test.sh tests/case/array.swl
+
+object:
+	sh bin/test.sh tests/case/object.swl
+
+conditional:
+	sh bin/test.sh tests/case/conditional.swl
+
+recursion:
+	sh bin/test.sh tests/case/recursion.swl
+
+iteration:
+	sh bin/test.sh tests/case/iteration.swl
+
+extension:
+	sh bin/test.sh tests/case/extension.swl
+
+reify:
+	sh bin/test.sh tests/case/reify.swl
+
+variation:
+	sh bin/test.sh tests/case/variation.swl
 
 swndl:
 	sh bin/run.sh bin/swndl
