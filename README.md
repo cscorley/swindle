@@ -11,12 +11,10 @@ Requirements
 Swindle runs on Python 3.2 or above. Support for lower Python 3.x
 versions has been hacked in, so use at your own risk there.
 
-Additional package requirements for unit testing are as follows:
+Swindle uses `nose==1.2.1` for unit testing.
 
-    nose==1.2.1
-
-You can install these requirements by running `make install`, which
-requires `pip`.
+You can install these requirements by running `make init`, which
+requires pip. The init will also set up virtualenv.
 
 Running
 -------
@@ -36,9 +34,10 @@ Language
 
 A lot. Much of the LISP syntax has been replaced with Python
 equivalents. There is a lot of functionality missing. This was
-implemented for a course on programming languages.
+implemented for a course on programming languages. That is,
+I don't plan to work on this past the final submission.
 
-### Required features (and TODO list)
+### Required features
 
 * comments ✔
 * integers and strings ✔
