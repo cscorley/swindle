@@ -1,4 +1,4 @@
-swindle
+Swindle
 =======
 
 Swindle is a simplified LISP-like interpreter built on Python that
@@ -8,7 +8,7 @@ on special forms. I might be burned at the stake for this.
 Requirements
 ------------
 
-`swindle` runs on Python 3.2 or above. Support for lower Python 3.x
+Swindle runs on Python 3.2 or above. Support for lower Python 3.x
 versions has been hacked in, so use at your own risk there.
 
 Additional package requirements for unit testing are as follows:
@@ -21,7 +21,7 @@ requires `pip`.
 Running
 -------
 
-At the moment, you can run swindle by executing `bin/swndl`, or `make
+At the moment, you can run Swindle by executing `bin/swndl`, or `make
 run`. `make run` will also execute `bin/swndl` on all files in
 `tests/case/`, but does not include the unit testing. Unit tests can be
 ran by executing `make test`.
@@ -73,7 +73,7 @@ integers. You can convert between the two using `str` and `int`
     
 #### classes/objects
 
-In `swindle`, if you want to return an object you use the `self` identifier. (Note: `self` is not a keyword!)
+In Swindle, if you want to return an object you use the `self` identifier. (Note: `self` is not a keyword!)
 
     
     def make_account:
@@ -94,7 +94,7 @@ In `swindle`, if you want to return an object you use the `self` identifier. (No
 
             self
 
-Then, instaniate the object by calling `make_account`. You can call `withdraw` and `deposit` using dot calling notation.
+Then, instantiate the object by calling `make_account`. You can call `withdraw` and `deposit` using dot calling notation.
 
     def acc:
         make_account(100)
