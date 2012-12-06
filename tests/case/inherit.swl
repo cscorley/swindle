@@ -32,13 +32,13 @@ def Fish:
         self
 
 def ralph:
-    Dog()
+    new(Dog())
 
 def lulu:
-    Cat()
+    new(Cat())
 
 def frankie:
-    Fish()
+    new(Fish())
 
 ralph.speak()
 lulu.speak()

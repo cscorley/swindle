@@ -160,6 +160,9 @@ class SetupEnvironment(Environment):
             ('pow', Plosure(math.pow)),
             ('factorial', Plosure(math.factorial)),
             ('sqrt', Plosure(math.sqrt)),
+
+            # objects
+            ('new', Plosure(swndl.new)),
             ]
 
         super(SetupEnvironment, self).__init__(iterable)

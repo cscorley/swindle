@@ -33,7 +33,7 @@ def and_op(*args):
             tmp = (tmp and arg)
         else:
             return False
-    return tmp 
+    return tmp
 
 def or_op(*args):
     tmp = False
@@ -163,21 +163,39 @@ def cdr(c):
 
     return c[1:]
 
-# a function only version of cons/car/cdr
-# http://jjinux.blogspot.com/2008/02/scheme-implementing-cons-car-and-cdr.html
-#def cons(a, b):
-#    def cell(pick):
-#        if pick == 1:
-#            return a
-#        elif pick == 2:
-#            return b
-#        else:
-#            raise ValueError
-#
-#    return cell
-#
-#def car(c):
-#    return c(1)
-#
-#def cdr(c):
-#    return c(2)
+def mixin(objects):
+    child = car(objects)
+    set_enclosing_scope(objects[-1], child.parent)
+    chain_scopes(child, cdr(objects))
+    set_definition_scopes(cdr(objects), child)
+    return child
+
+def set_enclosing_scope(item, child):
+    item.parent = child
+
+def get_enclosing_scope(item):
+    return item.parent
+
+def chain_scopes(first, rest):
+    while rest:
+        set_enclosing_scope(first, car(rest))
+        chain_scopes(car(rest), cdr(rest))
+        rest = cdr(rest)
+
+def set_definition_scopes(scopes, child):
+    for scope in scopes:
+        for var, val in scope.items():
+            if type(val) is Closure:
+                scope[var] = Closure(val.parameters, val.body, child)
+
+def new(child):
+    return mixin(follow_parents(child))
+
+def follow_parents(child):
+    current = child
+    parents = [child]
+    while "parent" in current:
+        parents.append(current["parent"])
+        current = current["parent"]
+
+    return parents

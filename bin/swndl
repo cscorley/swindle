@@ -32,9 +32,9 @@ def main(argv):
 
     try:
         if not eval_file(argv[1], argv=argv[2:]):
-            print("Could not open file %s for parsing" % argv[1])
+            print("Could not evaluate file %s" % argv[1])
     except ParseError as e:
-        print("Could not parse file %s" % argv[1])
+        print("Could not evaluate file %s" % argv[1])
         print(e.message)
 
 
