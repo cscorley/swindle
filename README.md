@@ -42,7 +42,7 @@ implemented for a course on programming languages.
 
 * comments ✔
 * integers and strings ✔
-* classes/objects ✗
+* classes/objects ✔
 * arrays with O(1) access time ✔
 * conditionals ✔
 * recursion ✔
@@ -50,7 +50,7 @@ implemented for a course on programming languages.
 * convenient means to print to the console ✔
 * an adequate set of operators ✔
 * functions as first-class objects ✔
-* an inheritance system ✗
+* an inheritance system ✔
 * detection of variables used before definition ✔
 
 ### Feature examples
@@ -73,9 +73,43 @@ integers. You can convert between the two using `str` and `int`
     
 #### classes/objects
 
-Objects are not supported. Because of how the grammar was designed,
-and how function calls are achieved, there is no clean way to do
-function dispatching (yet).
+In `swindle`, if you want to return an object you use the `self` identifier. (Note: `self` is not a keyword!)
+
+    
+    def make_account:
+        lambda balance:
+            def withdraw:
+                lambda amount:
+                    if or(gt(balance amount) equal(balance amount)):
+                        set! balance:
+                            sub(balance amount)
+                            balance
+                    else:
+                        "Insuffcicent funds!"
+            def deposit:
+                lambda amount:
+                    set! balance:
+                        add(balance amount)
+                    balance
+
+            self
+
+Then, instaniate the object by calling `make_account`. You can call `withdraw` and `deposit` using dot calling notation.
+
+    def acc:
+        make_account(100)
+
+    def acc2:
+        make_account(100)
+
+    print("acc withdraw 50: " acc.withdraw(50))
+    print("acc withdraw 60: " acc.withdraw(60))
+    print("acc deposit 40: " acc.deposit(40))
+    print("acc withdraw 60: " acc.withdraw(60))
+    print("acc2 deposit 1: " acc2.deposit(1))
+
+Note that the dot notation only works with function calls. That means each function defined in the object is public,
+and every attribute is private. You should build getter/setters to access the attributes.
 
 #### arrays with O(1) access time
 
@@ -218,7 +252,40 @@ item, respectively.
 
 #### an inheritance system 
 
-No.
+To inherit, we instantiate objects using the built-in `new` function and 
+set a special variable in the class named `parent`. This is probably best seen through an example:
+
+    def Animal:
+        lambda greeting:
+            def speak:
+                lambda:
+                    print(greeting)
+
+            self
+
+    def Dog:
+        lambda:
+            def parent:
+                Animal("WooF!")
+
+            self
+
+    def Cat:
+        lambda:
+            def parent:
+                Animal("Meow!")
+    
+            self
+
+    def ralph:
+        new(Dog())
+
+    def lulu:
+        new(Cat())
+
+    ralph.speak()
+    lulu.speak()
+
 
 #### detection of variables used before definition 
 
@@ -292,6 +359,8 @@ Built-ins
     * Returns a Python list of arguments given to the interpreter
 * `equal(*items)`
     * Compares items for equality.
+* `new(object)`
+    * Modifies the object to inherit from it's set `parent` objects.
 
 ### LISP lists and more
 
