@@ -310,17 +310,8 @@ This will pass the parser, but the evaluator will fail because `f` does not have
 access to `b`, which is inside `a`. 
             
 
-Example program
----------------
-
-    def abs:
-        lambda (x):
-            if ( lt(x 0) ):
-                neg(x)
-            else:
-                x
-
-    abs(neg(4))
+Example programs
+----------------
 
 More example programs can be found in `tests/case/` (note that improper
 programs are prepended with 'bad_')
