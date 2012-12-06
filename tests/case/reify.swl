@@ -1,1 +1,37 @@
-print("Not yet implemented -- see README")
+def Animal:
+    lambda greeting:
+        def speak:
+            lambda:
+                print(get_name() ":" greeting)
+
+        self
+
+def Dog:
+    lambda name:
+        def parent:
+            Animal("WooF!")
+
+        def get_name:
+            lambda:
+                name
+
+        self
+
+def Cat:
+    lambda name:
+        def parent:
+            Animal("Meow!")
+
+        def get_name:
+            lambda:
+                name
+
+        self
+def ralph:
+    new(Dog("Ralph"))
+
+def lulu:
+    new(Cat("LuLu"))
+
+ralph.speak()
+lulu.speak()

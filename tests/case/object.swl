@@ -1,53 +1,42 @@
-def my_cons:
-    lambda x y:
-        def setx:
-            lambda v:
-                set! x:
-                    v
-        def sety:
-            lambda v:
-                set! y:
-                    v
-        lambda msg:
-            if equal(msg `car):
-                x
-            elif equal(msg `cdr):
-                y
-            elif equal(msg `set_car):
-                setx
-            elif equal(msg `set_cdr):
-                sety
 
-def my_car:
-    lambda cell:
-        cell(`car)
+def make_account:
+    lambda balance:
+        def withdraw:
+            lambda amount:
+                if or(gt(balance amount) equal(balance amount)):
+                    set! balance:
+                        sub(balance amount)
+                    balance
+                else:
+                    "Insuffcicent funds!"
+        def deposit:
+            lambda amount:
+                set! balance:
+                    add(balance amount)
+                balance
 
-def my_cdr:
-    lambda cell:
-        cell(`cdr)
+        self
 
-def my_set_car:
-    lambda cell item:
-        def car:
-            cell(`set_car)
-        car(item)
+#def acc:
+#    make_account(100)
+#
+#def acc2:
+#    make_account(100)
+#
+#print("acc withdraw 50: " acc(`withdraw)(50))
+#print("acc withdraw 60: " acc(`withdraw)(60))
+#print("acc deposit 40: " acc(`deposit)(40))
+#print("acc withdraw 60: " acc(`withdraw)(60))
+#print("acc2 deposit 1: " acc2(`deposit)(1))
 
-def my_set_cdr:
-    lambda cell item:
-        def cdr:
-            cell(`set_cdr)
-        cdr(item)
-        # ideally:
-        # cell(`set_cdr)(item)
+def acc:
+    make_account(100)
 
-def some:
-    my_cons(5 my_cons("Stuff" "Item"))
+def acc2:
+    make_account(100)
 
-print(my_car(some))
-print(my_car(my_cdr(some)))
-
-my_set_car(some 4)
-my_set_cdr(some my_cons("Tacos" "Please?"))
-
-print(my_car(some))
-print(my_car(my_cdr(some)))
+print("acc withdraw 50: " acc.withdraw(50))
+print("acc withdraw 60: " acc.withdraw(60))
+print("acc deposit 40: " acc.deposit(40))
+print("acc withdraw 60: " acc.withdraw(60))
+print("acc2 deposit 1: " acc2.deposit(1))

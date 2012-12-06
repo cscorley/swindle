@@ -1,4 +1,4 @@
-all: compile test object2 extension
+all: compile run
 
 compile:
 	echo "Nothing to do here."
@@ -14,9 +14,6 @@ array:
 object:
 	sh bin/test.sh tests/case/object.swl
 
-object2:
-	sh bin/test.sh tests/case/object2.swl
-
 conditional:
 	sh bin/test.sh tests/case/conditional.swl
 
@@ -27,13 +24,13 @@ iteration:
 	sh bin/test.sh tests/case/iteration.swl
 
 extension:
-	sh bin/test.sh tests/case/inherit.swl
+	sh bin/test.sh tests/case/extension.swl
 
 reify:
-	sh bin/test.sh tests/case/inherit.swl
+	sh bin/test.sh tests/case/reify.swl
 
 variation:
-	sh bin/test.sh tests/case/inherit.swl
+	sh bin/test.sh tests/case/variation.swl
 
 rpn:
 	echo "RPN TESTING"

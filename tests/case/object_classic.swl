@@ -1,0 +1,53 @@
+def my_cons:
+    lambda x y:
+        def setx:
+            lambda v:
+                set! x:
+                    v
+        def sety:
+            lambda v:
+                set! y:
+                    v
+        lambda msg:
+            if equal(msg `car):
+                x
+            elif equal(msg `cdr):
+                y
+            elif equal(msg `set_car):
+                setx
+            elif equal(msg `set_cdr):
+                sety
+
+def my_car:
+    lambda cell:
+        cell(`car)
+
+def my_cdr:
+    lambda cell:
+        cell(`cdr)
+
+def my_set_car:
+    lambda cell item:
+        def car:
+            cell(`set_car)
+        car(item)
+
+def my_set_cdr:
+    lambda cell item:
+        def cdr:
+            cell(`set_cdr)
+        cdr(item)
+        # ideally:
+        # cell(`set_cdr)(item)
+
+def some:
+    my_cons(5 my_cons("Stuff" "Item"))
+
+print(my_car(some))
+print(my_car(my_cdr(some)))
+
+my_set_car(some 4)
+my_set_cdr(some my_cons("Tacos" "Please?"))
+
+print(my_car(some))
+print(my_car(my_cdr(some)))
