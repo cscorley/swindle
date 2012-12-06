@@ -127,11 +127,11 @@ For example, lets assume we have an array named `ar`.
 
 Conditionals are achieved through if/elif/else.
 
-    if (equal(a b c)):
+    if equal(a b c):
         print("All items are the same!")
-    elif (equal(a b)):
+    elif equal(a b):
         print("a is different than c!")
-    elif (equal(a c)):
+    elif equal(a c):
         print("a is different than b!")
     else:
         print("b is different than c!")
@@ -161,7 +161,7 @@ that either.
 
 Functions are declared by using `lambda`.
 
-    lambda (x):
+    lambda x:
         x
         
 The lambda above returns a closure that accepts one parameter, `x`, and
@@ -169,7 +169,7 @@ simply implicitly returns x. Note that returning is implicit. To use a closure,
 we could assign it to some variable.
 
     def print_and_return:
-        lambda (x):
+        lambda x:
             print(x)
             x
             
@@ -183,8 +183,8 @@ Recursion is achieved by calling a function within itself. Here
 is an example of how a recursive factorial could be implemented.
 
     def fact:
-        lambda (n):
-            if ( gt(n 1)):
+        lambda n:
+            if gt(n 1):
                 mul(n fact(sub(n 1)))
             else:
                 n
@@ -200,10 +200,10 @@ Iteration also is achieved through recursion calls.
 An iterative factorial could be implemented as so:
 
     def ifact:
-        lambda(n):
+        lambda n:
             def iter:
-                lambda (n cur):
-                    if (equal(n 0)):
+                lambda n cur:
+                    if equal(n 0):
                         cur
                     else:
                         iter(sub(n 1) mul(n cur))   # the iterative call
@@ -229,19 +229,19 @@ Functions can be tossed around just as if they were data.
 For example, `cons`, `car` and `cdr` could be implemented as so:
 
     def my_cons:
-        lambda (x y):
-            lambda (i):
-                if (equal(i 1)):
+        lambda x y:
+            lambda i:
+                if equal(i 1):
                     x
-                elif (equal(i 2)):
+                elif equal(i 2):
                     y
     
     def my_car:
-        lambda (cell):
+        lambda cell:
             cell(1)
             
     def my_cdr:
-        lambda (cell):
+        lambda cell:
             cell(2)
             
 What's going on? Here, `my_cons` is actually returning another closure with one parameter, `i`, 
@@ -302,12 +302,10 @@ not be scoped correctly. Example of what it cannot detect:
             def b:
                 lambda:
                     "Haha f() can't find me!"
-                    
-                    
 
 This will pass the parser, but the evaluator will fail because `f` does not have
 access to `b`, which is inside `a`. 
-            
+        
 
 Example programs
 ----------------
